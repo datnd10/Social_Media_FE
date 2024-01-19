@@ -8,6 +8,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import { useNavigate } from "react-router-dom";
 const Register = () => {
   const initialValues = {firstName: "", lastName: "", email: "", password: "" };
   const validationSchema = {
@@ -16,6 +17,7 @@ const Register = () => {
       .min(8, "password must be at least 8 characters")
       .required("pass word is required"),
   };
+  const navigate = useNavigate();
   const handelSubmit = (value) => {
     value.gender = gender;
     console.log(value);
@@ -143,6 +145,10 @@ const Register = () => {
           </Button>
         </Form>
       </Formik>
+      <div className="flex gap-2 items-center justify-center pt-5">
+        <p>If you already have account ?</p>
+        <Button onClick={() => navigate("/login")}>Login</Button>
+      </div>
     </div>
   );
 };
