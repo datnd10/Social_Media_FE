@@ -9,6 +9,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../../redux/auth/auth.action";
 const Register = () => {
   const initialValues = {firstName: "", lastName: "", email: "", password: "" };
   const validationSchema = {
@@ -18,9 +20,12 @@ const Register = () => {
       .required("pass word is required"),
   };
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
   const handelSubmit = (value) => {
     value.gender = gender;
-    console.log(value);
+    dispatch(registerUser({data: value}));
   };
 
   const [gender, setGender] = useState('female');

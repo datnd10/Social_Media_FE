@@ -4,22 +4,30 @@ import { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../redux/auth/auth.action";
 const Login = () => {
   const initialValues = { email: "", password: "" };
+
   const validationSchema = {
     email: Yup.string().email("invalid email").required("email is required"),
     password: Yup.string()
       .min(8, "password must be at least 8 characters")
       .required("pass word is required"),
   };
+
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   const handelSubmit = (value) => {
-    console.log("submit");
+    console.log(value);
+    dispatch(loginUser({data: value}))
   };
+
   return (
     <div>
       <Formik
-        onclick={handelSubmit}
+        onSubmit={handelSubmit}
         //validationSchema={validationSchema}
         initialValues={initialValues}
       >
