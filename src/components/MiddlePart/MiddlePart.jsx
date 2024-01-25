@@ -18,10 +18,10 @@ const MiddlePart = () => {
   const dispatch = useDispatch();
 
   const {post} = useSelector(state => state);
-
   useEffect(() => {
-    dispatch(getAllPost())
-  },[])
+    dispatch(getAllPost());
+  },[post.newComment])
+  
   return (
     <div className="px-20">
       <Card className="flex items-center p-5 rounded-b-md">

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { store } from "./redux/store";
 import { useEffect } from "react";
 import { getProfile } from "./redux/auth/auth.action";
+import { getAllPost } from "./redux/post/post.action";
 function App() {
   const {auth} = useSelector(store => store);
   const dispatch = useDispatch();
@@ -14,6 +15,10 @@ function App() {
 
   useEffect(() => { 
     dispatch(getProfile(jwt));
+  },[jwt])
+
+  useEffect(() => {
+    dispatch(getAllPost());
   },[jwt])
   
   return (
