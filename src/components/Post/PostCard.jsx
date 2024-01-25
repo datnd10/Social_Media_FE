@@ -14,7 +14,7 @@ import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-const PostCard = () => {
+const PostCard = ({post}) => {
   return (
     <Card className=''>
         <CardHeader
@@ -28,20 +28,18 @@ const PostCard = () => {
             <MoreVertIcon />
           </IconButton>
         }
-        title="ROnaldo"
-        subheader="@codewithzosh"
+        title= {post.user.firstName + " " + post.user.lastName}
+        subheader= {"@" + post.user.firstName + " " + post.user.lastName}
       />
       <CardMedia
         component="img"
-        height="194"
-        image="https://th.bing.com/th/id/R.6e2ad8dfe63e817efebf8ca4c314a504?rik=IJAHeMU1uNAt%2fQ&pid=ImgRaw&r=0"
+        height="200"
+        image= {post.image}
         alt="Paella dish"
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+          {post.caption}
         </Typography>
       </CardContent>
       <CardActions className='flex justify-between' disableSpacing>
@@ -56,7 +54,7 @@ const PostCard = () => {
                <ModeCommentIcon />
             </IconButton>
         </div>
-        <div>
+        <div> 
             <IconButton>
                 {true ? <BookmarkIcon /> : <BookmarkBorderIcon />}
             </IconButton>
