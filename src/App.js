@@ -17,9 +17,7 @@ function App() {
     dispatch(getProfile(jwt));
   },[jwt])
 
-  useEffect(() => {
-    dispatch(getAllPost());
-  },[jwt])
+
   
   return (
     <div className="">

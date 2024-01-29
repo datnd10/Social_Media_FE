@@ -1,4 +1,4 @@
-const cloud_name = "dlmecfl7h";
+const cloud_name = "dowftdnex";
 const preset_name = "social_media";
 
 export const uploadToCloudinary = async (pics, fileType) => {
