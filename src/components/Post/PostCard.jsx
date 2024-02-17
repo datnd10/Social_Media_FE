@@ -92,6 +92,7 @@ const PostCard = ({ post }) => {
               onKeyPress={(e) => {
                 if (e.key == "Enter") {
                   handleCreateComment(e.target.value);
+                  e.target.value="";
                 }
               }}
               type="text"

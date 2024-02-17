@@ -8,6 +8,8 @@ import { store } from "./redux/store";
 import { useEffect } from "react";
 import { getProfile } from "./redux/auth/auth.action";
 import { getAllPost } from "./redux/post/post.action";
+import { ThemeProvider } from "@mui/material";
+import { DarkTheme } from "./Theme/DarkTheme";
 function App() {
   const {auth} = useSelector(store => store);
   const dispatch = useDispatch();
@@ -20,13 +22,13 @@ function App() {
 
   
   return (
-    <div className="">
+    <ThemeProvider theme={DarkTheme}>
       <Routes>
         <Route path="/message" element={<Message />} />
         <Route path="/*" element={auth.user ? <HomePage /> : <Authentication />} />
         <Route path="/*" element={<Authentication />} />
       </Routes>
-    </div>
+    </ThemeProvider>
   );
 }
 

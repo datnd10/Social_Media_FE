@@ -6,4 +6,4 @@ export const isLikedByReqUser = (reqUserId, post) => {
         }
     }
     return false
-}
+}   
