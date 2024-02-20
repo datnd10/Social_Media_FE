@@ -8,7 +8,7 @@ const HomeRight = () => {
   return (
     <div className="pr-5">
       <SearchUser />
-      <Card className="p-5">
+      <Card className="p-5 bg-white">
         <div className="flex justify-between py-5 items-center">
           <p className="font-semibold opacity-70">Suggestions for</p>
           <p className="text-xs font-semibold opacity-70">View All</p>

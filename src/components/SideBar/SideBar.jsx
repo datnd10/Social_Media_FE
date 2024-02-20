@@ -32,11 +32,9 @@ const Sidebar = () => {
   return (
     <Card className="card h-screen flex flex-col justify-between py-5">
       <div className="flex flex-col justify-between h-full">
-        {" "}
-        {/* Change 1: Use flexbox to justify content */}
         <div className="space-y-10 pl-5">
           <div>
-            <span className="logo font-bold text-xl">Dat Social</span>
+            <a href="/"><span className="logo font-bold text-xl">Dat Social</span></a>
           </div>
           <div className="space-y-10">
             {navigationMenu.map((item) => (

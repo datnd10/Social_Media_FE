@@ -1,5 +1,5 @@
 import { Avatar, Button, Card } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Tabs from "@mui/material/Tabs";
@@ -7,8 +7,10 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import PostCard from "../../components/Post/PostCard";
 import UserReelCard from "../../components/Reels/UserReelCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
+import { getAllPost } from "../../redux/post/post.action";
+import { getUserbyId } from "../../redux/auth/auth.action";
 
 const tabs = [
   {
@@ -29,17 +31,33 @@ const tabs = [
   },
 ];
 
-const posts = [1, 1, 1, 1, 1];
 const reels = [1, 1, 1, 1, 1];
 const savePost = [1, 1, 1, 1, 1];
 const Profile = () => {
+  const { post, auth } = useSelector((store) => store);
   const { id } = useParams();
+
   const [value, setValue] = useState("post");
+
+
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+      dispatch(getUserbyId(id));
+  },[id])
+
+  console.log(auth);
+
+  useEffect(() => {
+    dispatch(getAllPost());
+  }, [post.newComment]);
+  
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const { auth } = useSelector((store) => store);
 
   const [open, setOpen] = useState(false);
   const handleOpenProfileModal = () => setOpen(true);
@@ -51,15 +69,15 @@ const Profile = () => {
         <div className="px-5 flex justify-around items-start h-[12rem]">
           <Avatar
             sx={{ width: "10rem", height: "10rem" }}
-            src={auth.user?.avatar}
+            src={id ? auth.profile?.avatar : auth.user?.avatar}
           />
           <div className="p-5">
             <div>
               <div className="flex justify-between items-start">
                 <h1 className="py-1 font-bold text-2xl">
-                  {auth.user?.firstName + " " + auth.user?.lastName}
+                  {id ? auth.profile?.firstName + " " + auth.profile?.lastName : auth.user?.firstName + " " + auth.user?.lastName}
                 </h1>
-                {true ? (
+                {auth.user?.id === (id ? auth.profile?.id : auth.user?.id) ? (
                   <Button
                     sx={{ borderRadius: "10px" }}
                     variant="contained"
@@ -68,8 +86,11 @@ const Profile = () => {
                     Edit Profile
                   </Button>
                 ) : (
-                  <Button sx={{ borderRadius: "20px" }} variant="contained">
-                    Follow Button
+                  <Button
+                    sx={{ borderRadius: "10px" }}
+                    variant="contained"
+                  >
+                    Follow
                   </Button>
                 )}
               </div>
@@ -78,10 +99,10 @@ const Profile = () => {
                 <span>41 followers</span>
                 <span>41 following</span>
               </div>
-              <p>@{auth.user?.firstName + "_" + auth.user?.lastName}</p>
+              <p>@{id ? auth.profile?.firstName + "_" + auth.profile?.lastName : auth.user?.firstName + "_" + auth.user?.lastName}</p>
             </div>
             <div>
-               <div dangerouslySetInnerHTML={{ __html: auth.user?.bio }} />
+              <div dangerouslySetInnerHTML={{ __html: id ? auth.profile?.bio : auth.user?.bio}} />
             </div>
           </div>
         </div>
@@ -104,22 +125,22 @@ const Profile = () => {
           </Box>
           <div className="flex justify-center">
             {value === "post" ? (
-              <div className="space-y-5 w-[70%] my-10">
-                {posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="border border-gray-300 rounded-md"
-                  >
-                    {/* Assuming PostCard component receives post data as props */}
-                    <PostCard post={post} />
-                  </div>
+              <div className="space-y-5 w-[60%] my-10">
+                {post.posts.map((item) => (
+                   item.user.id === (id ? auth.profile?.id : auth.user?.id) &&
+                    <div
+                      key={item.id}
+                      className="border border-gray-300 rounded-md"
+                    >
+                      <PostCard post={item} />
+                    </div>
+                    
                 ))}
               </div>
             ) : value === "reels" ? (
               <div className="flex justify-center flex-wrap gap-2 my-10">
                 {reels.map((reel) => (
                   <div key={reel.id}>
-                    {/* Assuming UserReelCard component receives reel data as props */}
                     <UserReelCard reel={reel} />
                   </div>
                 ))}
@@ -131,7 +152,6 @@ const Profile = () => {
                     key={post.id}
                     className="border border-gray-300 rounded-md"
                   >
-                    {/* Assuming PostCard component receives post data as props */}
                     <PostCard post={post} />
                   </div>
                 ))}
@@ -149,7 +169,6 @@ const Profile = () => {
         <ProfileModal open={open} handleClose={handleCloseProfileModal} />
       </section>
     </Card>
-    
   );
 };
 

@@ -15,6 +15,7 @@ import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import CircularProgress from '@mui/material/CircularProgress';
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
+import { useNavigate } from "react-router-dom";
 
 const Message = () => {
   const { message, auth } = useSelector((store) => store);
@@ -24,7 +25,7 @@ const Message = () => {
   const dispatch = useDispatch();
   const[loading, setLoading] = useState(false);
   const chatContainerRef = useRef(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(getAllChats());
   }, []);
@@ -101,7 +102,7 @@ const Message = () => {
         <Grid className="px-5" item xs={3}>
           <div className="flex h-full justify-between space-x-2">
             <div className="w-full">
-              <div className="flex space-x-4 items-center py-5">
+              <div className="flex space-x-4 items-center py-5 cursor-pointer" onClick={() => navigate("/")}>
                 <WestIcon />
                 <h1 className="text-xl font-bold">Home</h1>
               </div>

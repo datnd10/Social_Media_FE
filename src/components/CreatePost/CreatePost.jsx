@@ -11,6 +11,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useDispatch } from "react-redux";
 import { createPost } from "../../redux/post/post.action";
+import ClearIcon from "@mui/icons-material/Clear";
 const style = {
   position: "absolute",
   top: "50%",
@@ -24,7 +25,7 @@ const style = {
   borderRadius: ".6rem",
   outline: "none",
 };
-const CreatePost = ({ open, handleClose }) => {
+const CreatePost = ({ open, handleClose, auth }) => {
   const [selectedImage, setSelectedImage] = useState();
   const [selectedVideo, setSelectedVideo] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,7 @@ const CreatePost = ({ open, handleClose }) => {
     formik.setFieldValue("image", imageUrl);
   };
 
-  const handleSelectVideo = async(event) => {
+  const handleSelectVideo = async (event) => {
     setIsLoading(true);
     const videoUrl = await uploadToCloudinary(event.target.files[0]);
     setSelectedVideo(videoUrl);
@@ -63,19 +64,25 @@ const CreatePost = ({ open, handleClose }) => {
     <>
       <Modal
         open={open}
-        onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             <div>
-              <div className="flex space-x-4 items-center">
-                <Avatar />
-                <div>
-                  <p className="font-bold">123</p>
-                  <p className="text-sm">312</p>
+              <div className="flex justify-between">
+                <div className="flex space-x-4 items-center">
+                  <Avatar src={auth?.user?.avatar} />
+                  <div>
+                    <p className="font-bold">
+                      {auth?.user?.firstName + " " + auth?.user?.lastName}
+                    </p>
+                    <p className="text-sm">
+                      @{auth?.user?.firstName + " " + auth?.user?.lastName}
+                    </p>
+                  </div>
                 </div>
+                <ClearIcon className="cursor-pointer" onClick={handleClose}></ClearIcon>
               </div>
               <textarea
                 placeholder="write caption"

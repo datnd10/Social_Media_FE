@@ -4,6 +4,9 @@ import {
   GET_PROFILE_FAILURE,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
+  GET_USER_BY_ID_FAILURE,
+  GET_USER_BY_ID_REQUEST,
+  GET_USER_BY_ID_SUCCESS,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -88,5 +91,18 @@ export const searchUser = (query) => async (dispatch) => {
   } catch (error) {
     console.log(error);
     dispatch({ type: SEARCH_USER_FAILURE, payload: error });
+  }
+};
+
+
+export const getUserbyId = (userId) => async (dispatch) => {
+  dispatch({ type: GET_USER_BY_ID_REQUEST });
+  try {
+    const { data } = await api.get(`/api/users/${userId}`);
+    console.log("search user", data);
+    dispatch({ type: GET_USER_BY_ID_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({ type: GET_USER_BY_ID_FAILURE, payload: error });
   }
 };

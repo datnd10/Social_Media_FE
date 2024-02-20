@@ -17,6 +17,8 @@ const MiddlePart = () => {
   const handelOpenCreatePost = () => setOpen(true);
   const dispatch = useDispatch();
 
+  const {auth} = useSelector(state => state);
+
   const {post} = useSelector(state => state);
   useEffect(() => {
     dispatch(getAllPost());
@@ -28,7 +30,6 @@ const MiddlePart = () => {
         <div className="flex flex-col items-center mr-4 cursor-pointer">
           <Avatar
             sx={{ width: "5rem", height: "5rem" }}
-            //src='https://th.bing.com/th/id/R.6e2ad8dfe63e817efebf8ca4c314a504?rik=IJAHeMU1uNAt%2fQ&pid=ImgRaw&r=0'
           >
             <AddIcon sx={{ fontSize: "3rem" }} />
           </Avatar>
@@ -40,7 +41,7 @@ const MiddlePart = () => {
       </Card>
       <Card className="p-5 mt-5">
         <div className="flex justify-between">
-          <Avatar/>
+          <Avatar src={auth?.user?.avatar}/>
           <input onClick={handelOpenCreatePost} className="outline-none w-[90%] rounded-full px-5 bg-transparent border-[#3b4054] border" type="text"/>
         </div>
         <div className="flex justify-center space-x-9 mt-5">
@@ -70,7 +71,7 @@ const MiddlePart = () => {
         ))}
       </div>
       <div>
-        <CreatePost open={open} handleClose={handelCloseCreatePost} />
+        <CreatePost open={open} handleClose={handelCloseCreatePost} auth={auth}/>
       </div>
     </div>
   );
