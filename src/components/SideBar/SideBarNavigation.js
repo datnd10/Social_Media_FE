@@ -33,16 +33,6 @@ export const navigationMenu = [
         path:"/message"
     },
     {
-        title:"Lists",
-        icon: <ListAltIcon/>,
-        path:"/"
-    },
-    {
-        title:"Community",
-        icon: <GroupIcon/>,
-        path:"/"
-    },
-    {
         title:"Profile",
         icon: <AccountCircleIcon/>,
         path:"/profile"

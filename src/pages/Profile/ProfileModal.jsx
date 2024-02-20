@@ -1,13 +1,21 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { Formik, useFormik } from "formik";
+import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "../../redux/auth/auth.action";
-import { Avatar, IconButton, TextField } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import {
+  Avatar,
+  Backdrop,
+  CircularProgress,
+  IconButton,
+  TextField,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useRef } from "react";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
+import { useState } from "react";
 const style = {
   position: "absolute",
   top: "50%",
@@ -22,24 +30,40 @@ const style = {
   borderRadius: 3,
 };
 
-export default function ProfileModal({open, handleClose}) {
+const ProfileModal = ({ open, handleClose }) => {
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const handleSubmit = (values) => {
-    console.log(values);
-  }
+  const fileInputRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState();
+
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (event) => {
+    //setIsLoading(true);
+    const imageUrl = await uploadToCloudinary(event.target.files[0], "image");
+    console.log(imageUrl);
+    setSelectedImage(imageUrl);
+    formik.setFieldValue("avatar", imageUrl);
+    //setIsLoading(false);
+  };
+
+  const initialBio = auth.user.bio ? auth.user.bio.replace(/<br\s*\/?>/gi, "\n") : "";
+
   const formik = useFormik({
-      initialValues: {
-        firstName: auth.user.firstName || "",
-        lastName: auth.user.lastName || "",
-      },
-      onSubmit:(values,) => {
-        console.log(values);
-        dispatch(updateProfile(values));
-      }
-      
-  })
+    initialValues: {
+      firstName: auth.user.firstName || "",
+      lastName: auth.user.lastName || "",
+      avatar: selectedImage,
+      bio: initialBio,
+    },
+    onSubmit: (values) => {
+      console.log(values);
+      dispatch(updateProfile(values));
+    },
+  });
 
   return (
     <div>
@@ -52,29 +76,72 @@ export default function ProfileModal({open, handleClose}) {
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                    <IconButton onClick={handleClose}>
-                        <CloseIcon />
-                    </IconButton>
-                    <p>Edit Profile</p>
-                </div>
-                <Button type="submit">Save</Button>
+              <div className="flex items-center space-x-3">
+                <IconButton onClick={handleClose}>
+                  <CloseIcon />
+                </IconButton>
+                <p>Edit Profile</p>
+              </div>
+              <Button type="submit">Save</Button>
             </div>
             <div>
-                <div className="h-[15rem]">
-                    <img className="w-full h-full rounded-t-md" src="https://th.bing.com/th/id/R.6e2ad8dfe63e817efebf8ca4c314a504?rik=IJAHeMU1uNAt%2fQ&pid=ImgRaw&r=0" alt="" />
-                </div>
-                <div className="pl-5">
-                    <Avatar className="trasform -translate-y-24" sx={{ width: "10rem", height: "10rem" }} src="https://th.bing.com/th/id/R.6e2ad8dfe63e817efebf8ca4c314a504?rik=IJAHeMU1uNAt%2fQ&pid=ImgRaw&r=0" />
-                </div>
+              <div className="pl-5">
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={(event) => {
+                    handleFileChange(event);
+                    formik.setFieldValue("avatar", selectedImage);
+                  }}
+                  ref={fileInputRef}
+                />
+                <Avatar
+                  className="my-4"
+                  sx={{ width: "10rem", height: "10rem", cursor: "pointer" }}
+                  src={selectedImage || auth.user.avatar}
+                  inputProps={{ accept: "image/*" }}
+                  onClick={handleAvatarClick}
+                />
+              </div>
             </div>
             <div className="space-y-3">
-                <TextField fullWidth id="firstName" name="firstName" defaultValue={auth.user.firstName} label="First Name" value={formik.values.firstName} onChange={formik.handleChange}/> 
-                <TextField fullWidth id="lastName" name="lastName" defaultValue={auth.user.lastName} label="Last Name" value={formik.values.lastName} onChange={formik.handleChange}/> 
+              <TextField
+                fullWidth
+                id="firstName"
+                name="firstName"
+                defaultValue={auth.user.firstName}
+                label="First Name"
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+              />
+              <TextField
+                fullWidth
+                id="lastName"
+                name="lastName"
+                defaultValue={auth.user.lastName}
+                label="Last Name"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+              />
+              <TextField
+                placeholder="Write Bio"
+                name="bio"
+                id="bio"
+                label="Bio"
+                value={formik.values.bio}
+                onChange={formik.handleChange}
+                multiline
+                rows={4}
+                variant="outlined"
+                className="w-full mt-5"
+              />
             </div>
           </form>
         </Box>
       </Modal>
     </div>
   );
-}
+};
+
+export default ProfileModal;

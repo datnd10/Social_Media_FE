@@ -23,6 +23,7 @@ const PostCard = ({ post }) => {
 
   const { auth} = useSelector(store => store);
 
+
   const handleCreateComment = (content) => {
     const reqData = {
       postId: post.id,
@@ -52,18 +53,18 @@ const PostCard = ({ post }) => {
             <MoreVertIcon />
           </IconButton>
         }
-        title={post.user.firstName + " " + post.user.lastName}
-        subheader={"@" + post.user.firstName + " " + post.user.lastName}
+        title={post?.user?.firstName + " " + post?.user?.lastName}
+        subheader={"@" + post?.user?.firstName + " " + post?.user?.lastName}
       />
       <CardMedia
         component="img"
         height="200"
-        image={post.image}
+        image={post?.image}
         alt="Paella dish"
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          {post.caption}
+          {post?.caption}
         </Typography>
       </CardContent>
       <CardActions className="flex justify-between" disableSpacing>
