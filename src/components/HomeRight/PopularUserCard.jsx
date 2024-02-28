@@ -8,20 +8,7 @@ import { Button } from "@mui/material";
 const PopularUserCard = () => {
   return (
     <div>
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
-        }
-        action={
-          <Button size="small">
-            Follow
-          </Button>
-        }
-        title="ronaldo"
-        subheader="@ronaldo"
-      />
+      
     </div>
   );
 };

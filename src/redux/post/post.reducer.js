@@ -3,9 +3,15 @@ import {
   CREATE_POST_FAILURE,
   CREATE_POST_REQUEST,
   CREATE_POST_SUCCESS,
+  DELETE_POST_FAILURE,
+  DELETE_POST_REQUEST,
+  DELETE_POST_SUCCESS,
   GET_ALL_POST_FAILURE,
   GET_ALL_POST_REQUEST,
   GET_ALL_POST_SUCCESS,
+  GET_USERS_POST_FAILURE,
+  GET_USERS_POST_REQUEST,
+  GET_USERS_POST_SUCCESS,
   LIKE_POST_FAILURE,
   LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
@@ -26,6 +32,8 @@ export const postReducer = (state = initialState, action) => {
     case CREATE_POST_REQUEST:
     case GET_ALL_POST_REQUEST:
     case LIKE_POST_REQUEST:
+    case GET_USERS_POST_REQUEST:
+    case DELETE_POST_REQUEST:
       return {
         ...state,
         loading: true,
@@ -40,6 +48,7 @@ export const postReducer = (state = initialState, action) => {
         error: null,
       };
     case GET_ALL_POST_SUCCESS:
+    case GET_USERS_POST_SUCCESS:
       return {
         ...state,
         posts: action.payload,
@@ -65,9 +74,18 @@ export const postReducer = (state = initialState, action) => {
         error: null,
         newComment: action.payload
       }
+
+    case DELETE_POST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+      }
     case CREATE_POST_FAILURE:
     case GET_ALL_POST_FAILURE:
     case LIKE_POST_FAILURE:
+    case GET_USERS_POST_FAILURE:
+    case DELETE_POST_FAILURE: 
       return {
         ...state,
         loading: false,

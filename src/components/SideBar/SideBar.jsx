@@ -33,18 +33,18 @@ const Sidebar = () => {
     <Card className="card h-screen flex flex-col justify-between py-5">
       <div className="flex flex-col justify-between h-full">
         <div className="space-y-10 pl-5">
-          <div>
-            <a href="/"><span className="logo font-bold text-xl">Dat Social</span></a>
+          <div className="items-center">
+            <a href="/">
+              <span className="logo font-bold text-xl p-3">Dat Social</span>
+            </a>
           </div>
           <div className="space-y-10">
             {navigationMenu.map((item) => (
               <div
                 onClick={() => handleNavigate(item)}
-                className="cursor-pointer flex space-x-3 items-center"
+                className="cursor-pointer flex space-x-3 items-center hover:bg-gray-700 transition-colors p-3"
                 key={item.title}
               >
-                {" "}
-                {/* Change 2: Added key prop */}
                 {item.icon}
                 <p className="text-xl">{item.title}</p>
               </div>
@@ -83,8 +83,14 @@ const Sidebar = () => {
                 "aria-labelledby": "basic-button",
               }}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate(`/profile/${auth.user?.id}`);
+                  handleClose(); // Call handleClose function
+                }}
+              >
+                Profile
+              </MenuItem>
               <MenuItem onClick={handleClose}>Logout</MenuItem>
             </Menu>
           </div>

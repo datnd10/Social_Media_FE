@@ -37,7 +37,7 @@ const SearchUser = () => {
                 setUserName("");
               }}
               avatar={
-                <Avatar src="https://images.pexels.com/photos/18269258/pexels-photo-18269258/free-photo-of-woman-with-black-hair-in-shirt.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load"></Avatar>
+                <Avatar src={user.avatar}></Avatar>
               }
               title= {user.firstName + " " + user.lastName}
               subheader= {user.firstName + " " + user.lastName}

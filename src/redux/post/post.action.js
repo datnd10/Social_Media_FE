@@ -1,4 +1,4 @@
-import { CREATE_COMMENT_FAILURE, CREATE_COMMENT_REQUEST, CREATE_COMMENT_SUCCESS, CREATE_POST_FAILURE, CREATE_POST_REQUEST, CREATE_POST_SUCCESS, GET_ALL_POST_FAILURE, GET_ALL_POST_REQUEST, GET_ALL_POST_SUCCESS, GET_USERS_POST_FAILURE, GET_USERS_POST_REQUEST, GET_USERS_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS } from "./post.actionType";
+import { CREATE_COMMENT_FAILURE, CREATE_COMMENT_REQUEST, CREATE_COMMENT_SUCCESS, CREATE_POST_FAILURE, CREATE_POST_REQUEST, CREATE_POST_SUCCESS, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, GET_ALL_POST_FAILURE, GET_ALL_POST_REQUEST, GET_ALL_POST_SUCCESS, GET_USERS_POST_FAILURE, GET_USERS_POST_REQUEST, GET_USERS_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS } from "./post.actionType";
 import { API_BASE_URL, api } from "../../config/api"
 export const createPost = (postData) => async (dispatch) => {
     dispatch({type: CREATE_POST_REQUEST});
@@ -12,6 +12,17 @@ export const createPost = (postData) => async (dispatch) => {
     }
 }
 
+export const deletePost = (postId) => async (dispatch) => {
+    dispatch({type: DELETE_POST_REQUEST});
+    try {
+        const {data} = await api.delete(`/api/posts/${postId}`);
+        dispatch({type: DELETE_POST_REQUEST,  payload: data});
+        console.log(data);
+    } catch (error) {
+        console.log(error);
+        dispatch({type: DELETE_POST_SUCCESS, payload: error});
+    }
+}
 
 export const getAllPost = () => async (dispatch) => {
     dispatch({type: GET_ALL_POST_REQUEST});

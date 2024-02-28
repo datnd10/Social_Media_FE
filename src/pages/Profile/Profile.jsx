@@ -9,8 +9,14 @@ import PostCard from "../../components/Post/PostCard";
 import UserReelCard from "../../components/Reels/UserReelCard";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
-import { getAllPost } from "../../redux/post/post.action";
-import { getUserbyId } from "../../redux/auth/auth.action";
+import { getUsersPost } from "../../redux/post/post.action";
+import {
+  followUser,
+  getUserbyId,
+  unFollowUser,
+} from "../../redux/auth/auth.action";
+import ListUserCard from "../../components/ListUserCard/ListUserCard";
+import ListUserFollow from "../../components/ListUserCard/ListUserFollow";
 
 const tabs = [
   {
@@ -38,30 +44,40 @@ const Profile = () => {
   const { id } = useParams();
 
   const [value, setValue] = useState("post");
-
-
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-      dispatch(getUserbyId(id));
-  },[id])
-
-  console.log(auth);
-
-  useEffect(() => {
-    dispatch(getAllPost());
-  }, [post.newComment]);
   
 
+  useEffect(() => {
+    dispatch(getUserbyId(id));
+  }, [id, auth.profile?.followers]);
+
+  useEffect(() => {
+    dispatch(getUsersPost(id));
+  }, [id, post.newComment]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleFollowUser = (userId) => {
+    dispatch(followUser(userId));
+  };
+
+  const handleUnfollowUser = (userId) => {
+    dispatch(unFollowUser(userId));
+  };
+
   const [open, setOpen] = useState(false);
   const handleOpenProfileModal = () => setOpen(true);
   const handleCloseProfileModal = () => setOpen(false);
+
+  const [openFollowers, setOpenFollowers] = useState(false);
+  const handleOpenFollowers = () => setOpenFollowers(true);
+  const handleCloseFollowers = () => setOpenFollowers(false);
+
+  const [openFollowings, setOpenFollowings] = useState(false);
+  const handleOpenFollowings = () => setOpenFollowings(true);
+  const handleCloseFollowings = () => setOpenFollowings(false);
 
   return (
     <Card className=" w-[70%]">
@@ -69,40 +85,81 @@ const Profile = () => {
         <div className="px-5 flex justify-around items-start h-[12rem]">
           <Avatar
             sx={{ width: "10rem", height: "10rem" }}
-            src={id ? auth.profile?.avatar : auth.user?.avatar}
+            src={
+              id !== auth.user?.id ? auth.profile?.avatar : auth.user?.avatar
+            }
           />
           <div className="p-5">
             <div>
               <div className="flex justify-between items-start">
-                <h1 className="py-1 font-bold text-2xl">
-                  {id ? auth.profile?.firstName + " " + auth.profile?.lastName : auth.user?.firstName + " " + auth.user?.lastName}
+                <h1 className="py-1 font-bold text-2xl pr-5">
+                  {id !== auth.user?.id
+                    ? auth.profile?.firstName + " " + auth.profile?.lastName
+                    : auth.user?.firstName + " " + auth.user?.lastName}
                 </h1>
-                {auth.user?.id === (id ? auth.profile?.id : auth.user?.id) ? (
+                {auth.user?.id ===
+                (id !== auth.user?.id ? auth.profile?.id : auth.user?.id) ? (
                   <Button
                     sx={{ borderRadius: "10px" }}
                     variant="contained"
                     onClick={handleOpenProfileModal}
+                    className="mx-5"
                   >
                     Edit Profile
                   </Button>
                 ) : (
-                  <Button
-                    sx={{ borderRadius: "10px" }}
-                    variant="contained"
-                  >
-                    Follow
-                  </Button>
+                  <>
+                    {auth.profile?.followers.includes(auth?.user?.id) ? (
+                      <Button
+                        sx={{ borderRadius: "10px" }}
+                        variant="contained"
+                        onClick={() => handleUnfollowUser(id)}
+                        className="mx-5"
+                      >
+                        Unfollow
+                      </Button>
+                    ) : (
+                      // Nếu chưa follow, hiển thị nút Follow
+                      <Button
+                        sx={{ borderRadius: "10px" }}
+                        variant="contained"
+                        onClick={() => handleFollowUser(id)}
+                      >
+                        Follow
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
               <div className="flex gap-5 items-center py-3">
-                <span>41 posts</span>
-                <span>41 followers</span>
-                <span>41 following</span>
+                <span>{post.posts.length} posts</span>
+                <span onClick={handleOpenFollowers} className="hover:cursor-pointer">
+                  {id !== auth.user?.id
+                    ? auth.profile?.followers?.length || 0
+                    : auth.user?.followers?.length || 0}{" "}
+                  followers
+                </span>
+                <span onClick={handleOpenFollowings} className="hover:cursor-pointer">
+                  {id !== auth.user?.id
+                    ? auth.profile?.followings?.length || 0
+                    : auth.user?.followings?.length || 0}{" "}
+                  following
+                </span>
               </div>
-              <p>@{id ? auth.profile?.firstName + "_" + auth.profile?.lastName : auth.user?.firstName + "_" + auth.user?.lastName}</p>
+              <p>
+                @
+                {id !== auth.user?.id
+                  ? auth.profile?.firstName + "_" + auth.profile?.lastName
+                  : auth.user?.firstName + "_" + auth.user?.lastName}
+              </p>
             </div>
             <div>
-              <div dangerouslySetInnerHTML={{ __html: id ? auth.profile?.bio : auth.user?.bio}} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    id !== auth.user?.id ? auth.profile?.bio : auth.user?.bio,
+                }}
+              />
             </div>
           </div>
         </div>
@@ -127,14 +184,12 @@ const Profile = () => {
             {value === "post" ? (
               <div className="space-y-5 w-[60%] my-10">
                 {post.posts.map((item) => (
-                   item.user.id === (id ? auth.profile?.id : auth.user?.id) &&
-                    <div
-                      key={item.id}
-                      className="border border-gray-300 rounded-md"
-                    >
-                      <PostCard post={item} />
-                    </div>
-                    
+                  <div
+                    key={item.id}
+                    className="border border-gray-300 rounded-md"
+                  >
+                    <PostCard post={item} />
+                  </div>
                 ))}
               </div>
             ) : value === "reels" ? (
@@ -164,9 +219,29 @@ const Profile = () => {
           </div>
         </section>
       </div>
-
       <section>
         <ProfileModal open={open} handleClose={handleCloseProfileModal} />
+        <ListUserFollow
+          open={openFollowers}
+          handleClose={handleCloseFollowers}
+          title="Followers"
+          data={
+            id !== auth.user?.id
+              ? auth.profile?.followers
+              : auth.user?.followers
+          }
+        />
+
+        <ListUserFollow
+          open={openFollowings}
+          handleClose={handleCloseFollowings}
+          title="Followings"
+          data={
+            id !== auth.user?.id
+              ? auth.profile?.followings
+              : auth.user?.followings
+          }
+        />
       </section>
     </Card>
   );

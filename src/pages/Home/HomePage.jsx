@@ -11,6 +11,7 @@ import HomeRight from "../../components/HomeRight/HomeRight";
 import { useDispatch, useSelector } from "react-redux";
 
 import { store } from "../../redux/store";
+import SuggestPeople from "../../components/MiddlePart/SuggestPeople";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -19,11 +20,16 @@ const HomePage = () => {
   const {auth} = useSelector(store => store);
 
   return (
-    <div className="px-20">
+    <div>
       <Grid container spacing={0}>
-        <Grid item xs={0} lg={3}>
+        <Grid item xs={0} lg={2}>
           <div className="sticky top-0">
             <Sidebar />
+          </div>
+        </Grid>
+        <Grid item xs={0} lg={1}>
+          <div>
+            
           </div>
         </Grid>
         <Grid
@@ -34,6 +40,7 @@ const HomePage = () => {
         >
           <Routes>
             <Route path="/" element={<MiddlePart />} />
+            <Route path="/suggestions" element={<SuggestPeople />} />
             <Route path="/reels" element={<Reels />} />
             <Route path="/create-reels" element={<CreateReels />} />
             <Route path="/profile/:id" element={<Profile />} />

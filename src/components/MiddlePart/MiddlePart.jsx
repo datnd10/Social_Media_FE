@@ -20,9 +20,10 @@ const MiddlePart = () => {
   const {auth} = useSelector(state => state);
 
   const {post} = useSelector(state => state);
+  const [reload, setReload] = useState(false);
   useEffect(() => {
     dispatch(getAllPost());
-  },[post.newComment])
+  },[post.newComment, reload])
   
   return (
     <div className="px-20">
@@ -67,7 +68,7 @@ const MiddlePart = () => {
       </Card>
       <div className="mt-5 space-y-5">
         {post.posts.map((item) => (
-          <PostCard post={item}/>
+          <PostCard post={item} reload={reload} setReload={setReload}/>
         ))}
       </div>
       <div>

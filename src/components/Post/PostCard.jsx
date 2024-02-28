@@ -1,4 +1,11 @@
-import { Card, CardHeader, Divider } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Divider,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
@@ -16,10 +23,12 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import { useDispatch, useSelector } from "react-redux";
-import { createComment, getLikePost } from "../../redux/post/post.action";
+import { createComment, deletePost, getLikePost } from "../../redux/post/post.action";
 import { isLikedByReqUser } from "../../utils/isLikedByUser";
-import UserLikePost from "./UserLikePost";
-const PostCard = ({ post }) => {
+import ListUserCard from "../ListUserCard/ListUserCard";
+
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+const PostCard = ({ post, reload ,setReload }) => {
   const [showComment, setShowComment] = useState(false);
   const dispatch = useDispatch();
 
@@ -43,32 +52,107 @@ const PostCard = ({ post }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const calculateTimeAgo = (createdAt) => {
+    const createdDate = new Date(createdAt);
+    const currentDate = new Date();
+    const timeDifference = currentDate - createdDate;
+
+    // Convert time difference to appropriate units
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (years > 0) return `${years} year${years > 1 ? "s" : ""} ago`;
+    if (months > 0) return `${months} month${months > 1 ? "s" : ""} ago`;
+    if (weeks > 0) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openSetting = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseSetting = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDeletePost = (postId) => {
+    setReload(!reload)
+    dispatch(deletePost(postId));
+  }
+
   return (
     <Card className="">
-      <a href={`/profile/${post?.user?.id}`}>
-        <CardHeader
-          avatar={
+      <CardHeader
+        avatar={
+          <a href={`/profile/${post?.user?.id}`}>
             <Avatar
               src={post?.user?.avatar}
               sx={{ objectFit: "cover" }}
               aria-label="recipe"
-            ></Avatar>
-          }
-          action={
-            <IconButton aria-label="settings">
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={post?.user?.firstName + " " + post?.user?.lastName}
-        />
-      </a>
-      <CardMedia
-        component="img"
-        height="200"
-        image={post?.image}
-        alt="Paella dish"
-        sx={{ objectFit: "cover" }}
+            />
+          </a>
+        }
+        action={
+          <div>
+            <Button
+              id="basic-button"
+              aria-controls={openSetting ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={openSetting ? "true" : undefined}
+              onClick={handleClick}
+            >
+              <MoreHorizIcon />
+            </Button>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={openSetting}
+              onClose={handleCloseSetting}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem
+                onClick={() => {
+                  handleCloseSetting(); // Call handleClose function
+                  handleDeletePost(post.id);
+                }}
+              >
+                Delete
+              </MenuItem>
+              <MenuItem onClick={handleClose}>Update</MenuItem>
+            </Menu>
+          </div>
+        }
+        title={
+          <div>
+            <a href={`/profile/${post?.user?.id}`}>
+              {post?.user?.firstName + " " + post?.user?.lastName}
+            </a>
+            <p className="font-xs text-slate-500">
+              {calculateTimeAgo(post?.createdAt)}
+            </p>
+          </div>
+        }
       />
+      {post?.image && (
+        <CardMedia
+          component="img"
+          height="200"
+          image={post?.image}
+          alt="Paella dish"
+          sx={{ objectFit: "cover" }}
+        />
+      )}
       <CardContent>
         <div className="flex gap-4">
           <a href={`/profile/${post?.user?.id}`}>
@@ -82,7 +166,11 @@ const PostCard = ({ post }) => {
           </Typography>
         </div>
 
-        <div color="text.secondary" className="mt-2 cursor-pointer" onClick={handleOpen}>
+        <div
+          color="text.secondary"
+          className="mt-2 cursor-pointer"
+          onClick={handleOpen}
+        >
           {post?.liked.length} likes
         </div>
       </CardContent>
@@ -152,7 +240,12 @@ const PostCard = ({ post }) => {
           </div>
         </section>
       )}
-      <UserLikePost open={open} handleClose={handleClose} likes={post?.liked}/>
+      <ListUserCard
+        open={open}
+        handleClose={handleClose}
+        title="Likes"
+        data={post?.liked}
+      />
     </Card>
   );
 };

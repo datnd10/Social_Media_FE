@@ -1,4 +1,7 @@
 import {
+  FOLLOW_USER_FAILURE,
+  FOLLOW_USER_REQUEST,
+  FOLLOW_USER_SUCCESS,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
   GET_USER_BY_ID_FAILURE,
@@ -11,6 +14,9 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
   SEARCH_USER_SUCCESS,
+  UNFOLLOW_USER_FAILURE,
+  UNFOLLOW_USER_REQUEST,
+  UNFOLLOW_USER_SUCCESS,
   UPDATE_PROFILE_SUCCESS,
 } from "./auth.acctionType";
 
@@ -21,6 +27,8 @@ const initialState = {
   user: null,
   searchUser: [],
   profile: null,
+  followers: [],
+  followings: [],
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -29,6 +37,8 @@ export const authReducer = (state = initialState, action) => {
     case REGISTER_REQUEST:
     case GET_PROFILE_REQUEST:
     case GET_USER_BY_ID_REQUEST:
+    case FOLLOW_USER_REQUEST:
+    case UNFOLLOW_USER_REQUEST:
       return {
         ...state,
         loading: true,
@@ -46,8 +56,29 @@ export const authReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+    case FOLLOW_USER_SUCCESS:
+      return {
+        ...state,
+        user: action.payload,
+        error: null,
+        loading: false,
+      };
+    case UNFOLLOW_USER_SUCCESS:
+      return {
+        ...state,
+        user: action.payload,
+        error: null,
+        loading: false,
+      };
+
     case UPDATE_PROFILE_SUCCESS:
-      return { ...state, user: action.payload, error: null, loading: false, profile: action.payload };
+      return {
+        ...state,
+        user: action.payload,
+        error: null,
+        loading: false,
+        profile: action.payload,
+      };
     case SEARCH_USER_SUCCESS:
       return {
         ...state,
@@ -58,6 +89,8 @@ export const authReducer = (state = initialState, action) => {
     case LOGIN_FAILURE:
     case REGISTER_FAILURE:
     case GET_USER_BY_ID_FAILURE:
+    case FOLLOW_USER_FAILURE:
+    case UNFOLLOW_USER_FAILURE:
       return {
         ...state,
         loading: false,
