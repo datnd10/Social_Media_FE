@@ -23,16 +23,21 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import { useDispatch, useSelector } from "react-redux";
-import { createComment, deletePost, getLikePost } from "../../redux/post/post.action";
+import {
+  createComment,
+  deletePost,
+  getLikePost,
+} from "../../redux/post/post.action";
 import { isLikedByReqUser } from "../../utils/isLikedByUser";
 import ListUserCard from "../ListUserCard/ListUserCard";
 
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-const PostCard = ({ post, reload ,setReload }) => {
+import UpdatePost from "../UpdatePost/UpdatePost";
+const PostCard = ({ post, reload, setReload }) => {
   const [showComment, setShowComment] = useState(false);
   const dispatch = useDispatch();
 
-  const { auth } = useSelector((store) => store);
+  const { auth } = useSelector((state) => state);
 
   const handleCreateComment = (content) => {
     const reqData = {
@@ -85,9 +90,16 @@ const PostCard = ({ post, reload ,setReload }) => {
   };
 
   const handleDeletePost = (postId) => {
-    setReload(!reload)
+    setReload(!reload);
     dispatch(deletePost(postId));
-  }
+  };
+  const [updatePost, setUpdatePost] = useState();
+  const [openUpdatePost, setOpenUpdatePost] = useState();
+  const handelCloseUpdatePost = () => setOpenUpdatePost(false);
+  const handelOpenUpdatePost = () => {
+    setUpdatePost(post);
+    setOpenUpdatePost(true);
+  };
 
   return (
     <Card className="">
@@ -102,36 +114,38 @@ const PostCard = ({ post, reload ,setReload }) => {
           </a>
         }
         action={
-          <div>
-            <Button
-              id="basic-button"
-              aria-controls={openSetting ? "basic-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={openSetting ? "true" : undefined}
-              onClick={handleClick}
-            >
-              <MoreHorizIcon />
-            </Button>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={openSetting}
-              onClose={handleCloseSetting}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <MenuItem
-                onClick={() => {
-                  handleCloseSetting(); // Call handleClose function
-                  handleDeletePost(post.id);
+          auth?.user?.id === post?.user?.id && (
+            <div>
+              <Button
+                id="basic-button"
+                aria-controls={openSetting ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={openSetting ? "true" : undefined}
+                onClick={handleClick}
+              >
+                <MoreHorizIcon />
+              </Button>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={openSetting}
+                onClose={handleCloseSetting}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
                 }}
               >
-                Delete
-              </MenuItem>
-              <MenuItem onClick={handleClose}>Update</MenuItem>
-            </Menu>
-          </div>
+                <MenuItem
+                  onClick={() => {
+                    handleCloseSetting(); // Call handleClose function
+                    handleDeletePost(post.id);
+                  }}
+                >
+                  Delete
+                </MenuItem>
+                <MenuItem onClick={handelOpenUpdatePost}>Update</MenuItem>
+              </Menu>
+            </div>
+          )
         }
         title={
           <div>
@@ -192,7 +206,7 @@ const PostCard = ({ post, reload ,setReload }) => {
         </div>
         <div>
           <IconButton>
-            {true ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+            {false ? <BookmarkIcon /> : <BookmarkBorderIcon />}
           </IconButton>
         </div>
       </CardActions>
@@ -245,6 +259,13 @@ const PostCard = ({ post, reload ,setReload }) => {
         handleClose={handleClose}
         title="Likes"
         data={post?.liked}
+      />
+
+      <UpdatePost
+        open={openUpdatePost}
+        handleClose={handelCloseUpdatePost}
+        auth={auth}
+        updatePost={updatePost}
       />
     </Card>
   );

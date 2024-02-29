@@ -17,7 +17,8 @@ import {
 } from "../../redux/auth/auth.action";
 import ListUserCard from "../../components/ListUserCard/ListUserCard";
 import ListUserFollow from "../../components/ListUserCard/ListUserFollow";
-
+import BorderClearIcon from '@mui/icons-material/BorderClear';
+import { getUsersReel } from "../../redux/reel/reel.action";
 const tabs = [
   {
     value: "post",
@@ -31,21 +32,16 @@ const tabs = [
     value: "saved",
     name: "Saved",
   },
-  {
-    value: "repost",
-    name: "Repost",
-  },
 ];
 
 const reels = [1, 1, 1, 1, 1];
 const savePost = [1, 1, 1, 1, 1];
 const Profile = () => {
-  const { post, auth } = useSelector((store) => store);
+  const { post, auth, reel } = useSelector((store) => store);
   const { id } = useParams();
 
   const [value, setValue] = useState("post");
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     dispatch(getUserbyId(id));
@@ -54,6 +50,11 @@ const Profile = () => {
   useEffect(() => {
     dispatch(getUsersPost(id));
   }, [id, post.newComment]);
+
+  useEffect(() => {
+    dispatch(getUsersReel(id));
+    console.log(reel);
+  }, [id]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -78,6 +79,9 @@ const Profile = () => {
   const [openFollowings, setOpenFollowings] = useState(false);
   const handleOpenFollowings = () => setOpenFollowings(true);
   const handleCloseFollowings = () => setOpenFollowings(false);
+
+
+
 
   return (
     <Card className=" w-[70%]">
@@ -133,13 +137,19 @@ const Profile = () => {
               </div>
               <div className="flex gap-5 items-center py-3">
                 <span>{post.posts.length} posts</span>
-                <span onClick={handleOpenFollowers} className="hover:cursor-pointer">
+                <span
+                  onClick={handleOpenFollowers}
+                  className="hover:cursor-pointer"
+                >
                   {id !== auth.user?.id
                     ? auth.profile?.followers?.length || 0
                     : auth.user?.followers?.length || 0}{" "}
                   followers
                 </span>
-                <span onClick={handleOpenFollowings} className="hover:cursor-pointer">
+                <span
+                  onClick={handleOpenFollowings}
+                  className="hover:cursor-pointer"
+                >
                   {id !== auth.user?.id
                     ? auth.profile?.followings?.length || 0
                     : auth.user?.followings?.length || 0}{" "}
@@ -165,24 +175,27 @@ const Profile = () => {
         </div>
         <section>
           <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="wrapped label tabs example"
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  value={tab.value}
-                  label={tab.name}
-                  wrapped
-                />
-              ))}
-            </Tabs>
+            <div className="flex justify-center">
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                aria-label="wrapped label tabs example"
+                className="flex justify-center"
+              >
+                {tabs.map((tab, index) => (
+                  <Tab
+                    key={tab.value}
+                    value={tab.value}
+                    label= {tab.name}
+                    wrapped
+                  />
+                ))}
+              </Tabs>
+            </div>
           </Box>
           <div className="flex justify-center">
             {value === "post" ? (
-              <div className="space-y-5 w-[60%] my-10">
+              <div className="space-y-5 w-[70%] my-10">
                 {post.posts.map((item) => (
                   <div
                     key={item.id}
@@ -194,15 +207,15 @@ const Profile = () => {
               </div>
             ) : value === "reels" ? (
               <div className="flex justify-center flex-wrap gap-2 my-10">
-                {reels.map((reel) => (
-                  <div key={reel.id}>
-                    <UserReelCard reel={reel} />
+                {reel.userReel.map((item) => (
+                  <div key={item.id}>
+                    <UserReelCard reel={item} />
                   </div>
                 ))}
               </div>
             ) : value === "saved" ? (
               <div className="space-y-5 w-[70%] my-10">
-                {savePost.map((post) => (
+                {post.posts.map((post) => (
                   <div
                     key={post.id}
                     className="border border-gray-300 rounded-md"
@@ -211,8 +224,6 @@ const Profile = () => {
                   </div>
                 ))}
               </div>
-            ) : value === "repost" ? (
-              <div className="space-y-5 w-[70%] my-10">repost</div>
             ) : (
               ""
             )}

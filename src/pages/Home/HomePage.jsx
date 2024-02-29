@@ -5,7 +5,6 @@ import { Routes, useLocation, Route } from "react-router-dom";
 
 import MiddlePart from "../../components/MiddlePart/MiddlePart";
 import Reels from "../../components/Reels/Reels";
-import CreateReels from "../../components/Reels/CreateReels";
 import Profile from "../Profile/Profile";
 import HomeRight from "../../components/HomeRight/HomeRight";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +32,7 @@ const HomePage = () => {
           </div>
         </Grid>
         <Grid
-          lg={location.pathname === "/" ? 6 : 9}
+          lg={location.pathname === "/" ? 6 : 8}
           item
           className="px-5 flex justify-center"
           xs={12}
@@ -42,17 +41,20 @@ const HomePage = () => {
             <Route path="/" element={<MiddlePart />} />
             <Route path="/suggestions" element={<SuggestPeople />} />
             <Route path="/reels" element={<Reels />} />
-            <Route path="/create-reels" element={<CreateReels />} />
             <Route path="/profile/:id" element={<Profile />} />
           </Routes>
         </Grid>
-        {location.pathname === "/" && (
+        {location.pathname === "/" ? (
           <Grid item lg={3} className="relative">
             <div className="sticky top-0 w-full">
               <HomeRight />
             </div>
           </Grid>
-        )}
+        ) : <Grid item xs={0} lg={1}>
+        <div>
+          
+        </div>
+      </Grid>}
       </Grid>
     </div>
   );
