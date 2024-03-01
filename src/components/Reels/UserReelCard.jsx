@@ -1,43 +1,20 @@
-import { Avatar, Button, CardHeader } from "@mui/material";
+import { Avatar, Button, CardHeader, IconButton } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { followUser, unFollowUser } from "../../redux/auth/auth.action";
-import { getAllReel } from "../../redux/reel/reel.action";
-
+import { deleteReel, getAllReel } from "../../redux/reel/reel.action";
+import DeleteIcon from "@mui/icons-material/Delete";
 const UserReelCard = ({ reel }) => {
   console.log(reel);
   const dispatch = useDispatch();
-  const {auth} = useSelector(store => store);
+  const { auth } = useSelector((store) => store);
   const [reload, setReload] = useState(false);
-  const [showControls, setShowControls] = useState(true);
 
-  useEffect(() => {
-    dispatch(getAllReel());
-  }, [reload]);
 
-  const videoRef = useRef(null);
-  useEffect(() => {
-    const videoElement = videoRef.current;
-
-    const handleCanPlayThrough = () => {
-      // Video has loaded, start playing
-      videoElement.play();
-    };
-
-    const handleVideoEnd = () => {
-      // Video has ended, replay
-      videoElement.currentTime = 0; // Set the current time to the beginning
-      videoElement.play();
-    };
-
-    videoElement.addEventListener("canplaythrough", handleCanPlayThrough);
-    videoElement.addEventListener("ended", handleVideoEnd);
-
-    return () => {
-      videoElement.removeEventListener("canplaythrough", handleCanPlayThrough);
-      videoElement.removeEventListener("ended", handleVideoEnd);
-    };
-  }, []); // Only run the effect once, similar to componentDidMount
+  const handleDeleteReel = (postId) => {
+    dispatch(deleteReel(postId));
+    setReload(!reload);
+  };
 
   const handleFollowUser = (userId) => {
     setReload(!reload);
@@ -54,19 +31,27 @@ const UserReelCard = ({ reel }) => {
   };
 
   return (
-    <div className="relative space-y-5 w-full my-5">
+    <div className="relative space-y-5 min-w-full w-full my-5">
       <video
-        ref={videoRef}
-        controls={showControls}
-        className="w-full h-96"
+        autoPlay loop muted controls
+        className="w-full min-w-full h-96 object-cover"
         src={reel.video}
       />
-      <div className="absolute bottom-10 left-0 right-0 bg-transparent p-4">
+      <div className="absolute bottom-12 left-0 right-0 bg-transparent p-4 w-full">
         <div className="text-white">
           <div key={reel.user.id} className="flex gap-2">
-            <a href={`/profile/${reel.user.id}`} className="flex items-center gap-3">  
-                <Avatar src={reel.user.avatar} aria-label="recipe" className="w-1 h-1"></Avatar>
-                <p className="font-semibold">{reel.user.firstName + " " + reel.user.lastName}</p>
+            <a
+              href={`/profile/${reel.user.id}`}
+              className="flex items-center gap-3"
+            >
+              <Avatar
+                src={reel.user.avatar}
+                aria-label="recipe"
+                className="w-1 h-1"
+              ></Avatar>
+              <p className="font-semibold">
+                {reel.user.firstName + " " + reel.user.lastName}
+              </p>
             </a>
             {reel.user.id !== auth.user.id &&
               (!isUserFollowed(reel.user.id) ? (
@@ -82,6 +67,15 @@ const UserReelCard = ({ reel }) => {
           <p className="">{reel.title}</p>
         </div>
       </div>
+      {reel.user.id === auth.user.id && (
+        <div className="absolute top-0 right-0 bg-transparent p-4">
+          <div className="text-white">
+            <IconButton onClick={() => handleDeleteReel(reel.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

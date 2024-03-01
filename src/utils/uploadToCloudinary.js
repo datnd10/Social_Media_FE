@@ -2,6 +2,7 @@ const cloud_name = "dowftdnex";
 const preset_name = "social_media";
 
 export const uploadToCloudinary = async (pics, fileType) => {
+  console.log(pics, fileType);
   if (pics && fileType) {
     const data = new FormData();
     data.append("file", pics);

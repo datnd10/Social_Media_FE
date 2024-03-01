@@ -17,6 +17,7 @@ import { useRef } from "react";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useState } from "react";
 import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
+import { createReel } from "../../redux/reel/reel.action";
 const style = {
   position: "absolute",
   top: "50%",
@@ -35,18 +36,13 @@ const CreateReelModal = ({ open, handleClose }) => {
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const fileInputRef = useRef(null);
-  const [selectedImage, setSelectedImage] = useState();
   const [selectedVideo, setSelectedVideo] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAvatarClick = () => {
-    fileInputRef.current.click();
-  };
 
   const handleSelectVideo = async (event) => {
     setIsLoading(true);
-    const videoUrl = await uploadToCloudinary(event.target.files[0]);
+    const videoUrl = await uploadToCloudinary(event.target.files[0], "video");
     setSelectedVideo(videoUrl);
     setIsLoading(false);
     formik.setFieldValue("video", videoUrl);
@@ -55,11 +51,11 @@ const CreateReelModal = ({ open, handleClose }) => {
   const formik = useFormik({
     initialValues: {
       title: "",
-      video:  ""
+      video: ""
     },
     onSubmit: (values) => {
       console.log(values);
-      dispatch(updateProfile(values));
+      dispatch(createReel(values));
     },
   });
 
@@ -79,36 +75,41 @@ const CreateReelModal = ({ open, handleClose }) => {
                 </IconButton>
                 <p>Create Reel</p>
               </div>
-              <Button type="submit">Save</Button>
+              <Button type="submit">Post</Button>
             </div>
             <div className="space-y-3">
-              <TextField
-                fullWidth
-                id="caption"
-                name="caption"
-                label="Caption"
-                value={formik.values.firstName}
+              <textarea
+                placeholder="write title"
+                name="title"
+                id="title"
+                value={formik.values.title}
                 onChange={formik.handleChange}
-              />
+                rows="4"
+                className="outline-none w-full mt-5 p-2 bg-transparent border border-[#3b4054] rounded-sm"
+              ></textarea>
             </div>
-
             <div className="flex space-x-5 items-center mt-5">
-                <div>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    id="video-input"
-                    onChange={handleSelectVideo}
-                    style={{ display: "none" }}
-                  />
-                  <label htmlFor="video-input">
-                    <IconButton color="primary">
-                      <VideoCameraBackIcon />
-                    </IconButton>
-                  </label>
-                  <span>Video</span>
-                </div>
+              <div>
+                <input
+                  type="file"
+                  accept="video/*"
+                  id="video-input"
+                  onChange={handleSelectVideo}
+                  style={{ display: "none" }}
+                />
+                <label htmlFor="video-input">
+                  <IconButton color="primary" component="span">
+                    <VideoCameraBackIcon />
+                  </IconButton>
+                </label>
+                <span>Video</span>
               </div>
+            </div>
+            {selectedVideo && (
+                <div>
+                <video src={selectedVideo} autoPlay loop muted controls className="h-[10rem] w-full" alt=""></video>
+              </div>
+              )}
           </form>
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -167,6 +167,9 @@ const PostCard = ({ post, reload, setReload }) => {
           sx={{ objectFit: "cover" }}
         />
       )}
+      {post?.video && (
+        <video src={post?.video} autoPlay loop muted controls className="w-full max-h-96"></video>
+      )}
       <CardContent>
         <div className="flex gap-4">
           <a href={`/profile/${post?.user?.id}`}>

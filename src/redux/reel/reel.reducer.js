@@ -39,7 +39,6 @@ export const reelReducer = (state = initialState, action) => {
     case DELETE_REEL_SUCCESS:
       return {
         ...state,
-        listReel: state.listReel.filter((reel) => reel._id !== action.payload),
         loading: false,
         error: null,
       }

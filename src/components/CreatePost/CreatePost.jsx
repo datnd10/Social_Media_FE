@@ -42,7 +42,7 @@ const CreatePost = ({ open, handleClose, auth }) => {
 
   const handleSelectVideo = async (event) => {
     setIsLoading(true);
-    const videoUrl = await uploadToCloudinary(event.target.files[0]);
+    const videoUrl = await uploadToCloudinary(event.target.files[0], "video");
     setSelectedVideo(videoUrl);
     setIsLoading(false);
     formik.setFieldValue("video", videoUrl);
@@ -118,7 +118,7 @@ const CreatePost = ({ open, handleClose, auth }) => {
                     style={{ display: "none" }}
                   />
                   <label htmlFor="video-input">
-                    <IconButton color="primary">
+                  <IconButton color="primary" component="span">
                       <VideoCameraBackIcon />
                     </IconButton>
                   </label>
@@ -130,6 +130,12 @@ const CreatePost = ({ open, handleClose, auth }) => {
                   <img src={selectedImage} className="h-[10rem]" alt="" />
                 </div>
               )}
+              {selectedVideo && (
+                <div>
+                <video src={selectedVideo} autoPlay loop muted controls className="h-[10rem] w-full" alt=""></video>
+              </div>
+              )}
+
               <div className="flex w-full justify-end">
                 <Button type="submit" sx={{ borderRadius: "1.5rem" }}>
                   Post

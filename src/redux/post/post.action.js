@@ -29,7 +29,7 @@ export const getAllPost = () => async (dispatch) => {
     try {
         const {data} = await api.get(`/api/posts`);
         dispatch({type: GET_ALL_POST_SUCCESS,  payload: data});
-        console.log("get all post", data);
+        // console.log("get all post", data);
     } catch (error) {
         console.log(error);
         dispatch({type: GET_ALL_POST_FAILURE, payload: error});
