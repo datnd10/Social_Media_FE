@@ -27,12 +27,14 @@ import {
   createComment,
   deletePost,
   getLikePost,
+  getSavePost,
 } from "../../redux/post/post.action";
 import { isLikedByReqUser } from "../../utils/isLikedByUser";
 import ListUserCard from "../ListUserCard/ListUserCard";
 
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import UpdatePost from "../UpdatePost/UpdatePost";
+import { isSavedByReqUser } from "../../utils/isSavedByUser";
 const PostCard = ({ post, reload, setReload }) => {
   const [showComment, setShowComment] = useState(false);
   const dispatch = useDispatch();
@@ -52,6 +54,10 @@ const PostCard = ({ post, reload, setReload }) => {
   const handleLikePost = (post) => {
     dispatch(getLikePost(post.id));
   };
+
+  const handleSavePost = (post) => {
+    dispatch(getSavePost(post.id));
+  }
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -168,7 +174,14 @@ const PostCard = ({ post, reload, setReload }) => {
         />
       )}
       {post?.video && (
-        <video src={post?.video} autoPlay loop muted controls className="w-full max-h-96"></video>
+        <video
+          src={post?.video}
+          autoPlay
+          loop
+          muted
+          controls
+          className="w-full max-h-96"
+        ></video>
       )}
       <CardContent>
         <div className="flex gap-4">
@@ -208,8 +221,12 @@ const PostCard = ({ post, reload, setReload }) => {
           </IconButton>
         </div>
         <div>
-          <IconButton>
-            {false ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+          <IconButton onClick={() => handleSavePost(post)}>
+            {isSavedByReqUser(auth.user.id, post) ? (
+              <BookmarkIcon />
+            ) : (
+              <BookmarkBorderIcon />
+            )}
           </IconButton>
         </div>
       </CardActions>

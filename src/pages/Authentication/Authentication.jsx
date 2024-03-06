@@ -3,13 +3,14 @@ import {Card, Grid} from '@mui/material'
 import Login from './Login'
 import Register from './Register'
 import { Routes, Route } from "react-router-dom";
+import bachground from "../../assets/image/background.jpg"
 
 const Authentication = () => {
   return (
     <div>
         <Grid container>
             <Grid className='h-screen overflow-hidden' item xs={7}>
-                <img className='h-full w-full' src="https://www.thesportsman.com/media/images/admin/football/original/Ronaldo2.jpg" alt="" />
+                <img className='h-full w-full' src={bachground} alt="" />
             </Grid>
             <Grid item xs={5}>
                 <div className='px-20 flex flex-col justify-center h-full'>

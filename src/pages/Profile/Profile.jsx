@@ -1,7 +1,7 @@
 import { Avatar, Button, Card } from "@mui/material";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -9,7 +9,7 @@ import PostCard from "../../components/Post/PostCard";
 import UserReelCard from "../../components/Reels/UserReelCard";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
-import { getUsersPost } from "../../redux/post/post.action";
+import { getSavePost, getUserSavePost, getUsersPost } from "../../redux/post/post.action";
 import {
   followUser,
   getUserbyId,
@@ -19,6 +19,8 @@ import ListUserCard from "../../components/ListUserCard/ListUserCard";
 import ListUserFollow from "../../components/ListUserCard/ListUserFollow";
 import BorderClearIcon from '@mui/icons-material/BorderClear';
 import { getUsersReel } from "../../redux/reel/reel.action";
+import { getUserStory } from "../../redux/story/story.action";
+import StoryCard from "../../components/Story/StoryCard";
 const tabs = [
   {
     value: "post",
@@ -32,14 +34,18 @@ const tabs = [
     value: "saved",
     name: "Saved",
   },
+  {
+    value: "archive",
+    name: "Archive",
+  }
 ];
 
 const reels = [1, 1, 1, 1, 1];
 const savePost = [1, 1, 1, 1, 1];
 const Profile = () => {
-  const { post, auth, reel } = useSelector((store) => store);
+  const { post, auth, reel, story } = useSelector((store) => store);
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const [value, setValue] = useState("post");
   const dispatch = useDispatch();
 
@@ -53,7 +59,8 @@ const Profile = () => {
 
   useEffect(() => {
     dispatch(getUsersReel(id));
-    console.log(reel);
+    dispatch(getUserStory(id));
+    dispatch(getUserSavePost(id));
   }, [id]);
 
   const handleChange = (event, newValue) => {
@@ -80,8 +87,7 @@ const Profile = () => {
   const handleOpenFollowings = () => setOpenFollowings(true);
   const handleCloseFollowings = () => setOpenFollowings(false);
 
-
-
+  console.log(post);
 
   return (
     <Card className=" w-[70%]">
@@ -215,12 +221,24 @@ const Profile = () => {
               </div>
             ) : value === "saved" ? (
               <div className="space-y-5 w-[70%] my-10">
-                {post.posts.map((post) => (
+                {post?.savePost.map((post) => (
                   <div
                     key={post.id}
                     className="border border-gray-300 rounded-md"
                   >
                     <PostCard post={post} />
+                  </div>
+                ))}
+              </div>
+            ) : value === "archive" ? (
+              <div className="w-[80%] my-10 flex gap-2">
+                {story.userStory.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-gray-300 rounded-md hover:cursor-pointer"
+                    onClick={() => navigate(`/archive/user/${auth.profile?.id}/story/${item.id}`)}
+                  >
+                    <StoryCard story={item} />
                   </div>
                 ))}
               </div>

@@ -33,6 +33,8 @@ const CreatePost = ({ open, handleClose, auth }) => {
   const dispatch = useDispatch();
 
   const handleSelectImage = async (event) => {
+    formik.setFieldValue("video", "");
+    setSelectedVideo("");
     setIsLoading(true);
     const imageUrl = await uploadToCloudinary(event.target.files[0], "image");
     setSelectedImage(imageUrl);
@@ -41,6 +43,8 @@ const CreatePost = ({ open, handleClose, auth }) => {
   };
 
   const handleSelectVideo = async (event) => {
+    formik.setFieldValue("image", "");
+    setSelectedImage("");
     setIsLoading(true);
     const videoUrl = await uploadToCloudinary(event.target.files[0], "video");
     setSelectedVideo(videoUrl);
@@ -57,8 +61,21 @@ const CreatePost = ({ open, handleClose, auth }) => {
     onSubmit: (values) => {
       console.log(values);
       dispatch(createPost(values));
+      formik.setFieldValue("caption", "");
+      formik.setFieldValue("image", "");
+      formik.setFieldValue("video", "");
+      setSelectedImage("");
+      setSelectedVideo("");
     },
   });
+
+  const clearInput =  () => {
+    formik.setFieldValue("caption", "");
+    formik.setFieldValue("image", "");
+    formik.setFieldValue("video", "");
+    setSelectedImage("");
+    setSelectedVideo("");
+}
 
   return (
     <>
@@ -82,7 +99,13 @@ const CreatePost = ({ open, handleClose, auth }) => {
                     </p>
                   </div>
                 </div>
-                <ClearIcon className="cursor-pointer" onClick={handleClose}></ClearIcon>
+                <ClearIcon
+                  className="cursor-pointer"
+                  onClick={() => {
+                    clearInput();
+                    handleClose();
+                  }}
+                ></ClearIcon>
               </div>
               <textarea
                 placeholder="write caption"
@@ -118,7 +141,7 @@ const CreatePost = ({ open, handleClose, auth }) => {
                     style={{ display: "none" }}
                   />
                   <label htmlFor="video-input">
-                  <IconButton color="primary" component="span">
+                    <IconButton color="primary" component="span">
                       <VideoCameraBackIcon />
                     </IconButton>
                   </label>
@@ -127,13 +150,21 @@ const CreatePost = ({ open, handleClose, auth }) => {
               </div>
               {selectedImage && (
                 <div>
-                  <img src={selectedImage} className="h-[10rem]" alt="" />
+                  <img src={selectedImage} className="h-[15rem] w-full object-cover my-10" alt="" />
                 </div>
               )}
               {selectedVideo && (
                 <div>
-                <video src={selectedVideo} autoPlay loop muted controls className="h-[10rem] w-full" alt=""></video>
-              </div>
+                  <video
+                    src={selectedVideo}
+                    autoPlay
+                    loop
+                    muted
+                    controls
+                    className="h-[15rem] w-full object-cover my-10"
+                    alt=""
+                  ></video>
+                </div>
               )}
 
               <div className="flex w-full justify-end">

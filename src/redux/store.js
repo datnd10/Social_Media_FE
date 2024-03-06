@@ -6,13 +6,15 @@ import { postReducer } from "./post/post.reducer";
 import { messageReducer } from "./message/message.reducer";
 import {  userReducer } from "./user/user.reducer";
 import { reelReducer } from "./reel/reel.reducer";
+import { storyReducer } from "./story/story.reducer";
 
 const rootReducers = combineReducers({
     auth: authReducer,
     post: postReducer,
     message: messageReducer,
     user: userReducer,
-    reel: reelReducer
+    reel: reelReducer,
+    story: storyReducer
 });
 
 export const store = legacy_createStore(rootReducers, applyMiddleware(thunk))

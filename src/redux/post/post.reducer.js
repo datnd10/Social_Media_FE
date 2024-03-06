@@ -9,12 +9,16 @@ import {
   GET_ALL_POST_FAILURE,
   GET_ALL_POST_REQUEST,
   GET_ALL_POST_SUCCESS,
+  GET_SAVE_POST_REQUEST,
+  GET_SAVE_POST_SUCCESS,
   GET_USERS_POST_FAILURE,
   GET_USERS_POST_REQUEST,
   GET_USERS_POST_SUCCESS,
   LIKE_POST_FAILURE,
   LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
+  SAVE_POST_REQUEST,
+  SAVE_POST_SUCCESS,
 } from "./post.actionType";
 
 const initialState = {
@@ -24,7 +28,8 @@ const initialState = {
   posts: [],
   like: null,
   comments:[],
-  newComment: null
+  newComment: null,
+  savePost: []
 };
 
 export const postReducer = (state = initialState, action) => {
@@ -34,6 +39,8 @@ export const postReducer = (state = initialState, action) => {
     case LIKE_POST_REQUEST:
     case GET_USERS_POST_REQUEST:
     case DELETE_POST_REQUEST:
+    case SAVE_POST_REQUEST:
+    case GET_SAVE_POST_REQUEST:
       return {
         ...state,
         loading: true,
@@ -56,6 +63,13 @@ export const postReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+    case GET_SAVE_POST_SUCCESS:
+      return {
+        ...state,
+        savePost: action.payload,
+        loading: false,
+        error: null,
+      };
     case LIKE_POST_SUCCESS:
       return {
         ...state,
@@ -67,6 +81,20 @@ export const postReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+    
+    case SAVE_POST_SUCCESS:
+      return {
+        ...state,
+        savePost: action.payload,
+        loading: false,
+        error: null,
+        posts: state.posts.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
+        loading: false,
+        error: null,
+      }
+
     case CREATE_COMMENT_SUCCESS:
       return {
         ...state,

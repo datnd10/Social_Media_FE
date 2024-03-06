@@ -11,12 +11,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { store } from "../../redux/store";
 import SuggestPeople from "../../components/MiddlePart/SuggestPeople";
+import Story from "../Story/Story";
+import ArchiveStory from "../Story/ArchireStory";
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const jwt = localStorage.getItem("token");
-  const {auth} = useSelector(store => store);
+  const { auth } = useSelector((store) => store);
 
   return (
     <div>
@@ -27,9 +29,7 @@ const HomePage = () => {
           </div>
         </Grid>
         <Grid item xs={0} lg={1}>
-          <div>
-            
-          </div>
+          <div></div>
         </Grid>
         <Grid
           lg={location.pathname === "/" ? 6 : 8}
@@ -42,6 +42,8 @@ const HomePage = () => {
             <Route path="/suggestions" element={<SuggestPeople />} />
             <Route path="/reels" element={<Reels />} />
             <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/story/:id" element={<Story />} />
+            <Route path="/archive/user/:userId/story/:storyId" element={<ArchiveStory />} />
           </Routes>
         </Grid>
         {location.pathname === "/" ? (
@@ -50,11 +52,11 @@ const HomePage = () => {
               <HomeRight />
             </div>
           </Grid>
-        ) : <Grid item xs={0} lg={1}>
-        <div>
-          
-        </div>
-      </Grid>}
+        ) : (
+          <Grid item xs={0} lg={1}>
+            <div></div>
+          </Grid>
+        )}
       </Grid>
     </div>
   );

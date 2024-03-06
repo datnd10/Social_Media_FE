@@ -1,7 +1,7 @@
 import { Avatar, Card, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
-import StoryCircle from "./StoryCircle";
+import StoryCircle from "../Story/StoryCircle";
 import ImageIcon from "@mui/icons-material/Image";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import ArticleIcon from "@mui/icons-material/Article";
@@ -9,39 +9,60 @@ import PostCard from "../Post/PostCard";
 import CreatePost from "../CreatePost/CreatePost";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPost } from "../../redux/post/post.action";
-const story = [11, 1, 1, 1, 1, 1];
-const Post = [11, 1, 1, 1, 1, 1];
+import {
+  getAllStoryByFollowing,
+  getUserStory,
+} from "../../redux/story/story.action";
+import { useNavigate } from "react-router-dom";
+import CreateStory from "../Story/CreateStory";
+
 const MiddlePart = () => {
   const [open, setOpen] = useState();
   const handelCloseCreatePost = () => setOpen(false);
   const handelOpenCreatePost = () => setOpen(true);
+
+  const [openCreateStory, setOpenStory] = useState();
+  const handelCloseCreateStory = () => setOpenStory(false);
+  const handelOpenCreateStory = () => setOpenStory(true);
+
   const dispatch = useDispatch();
 
   const { auth } = useSelector((state) => state);
 
-  const { post } = useSelector((state) => state);
+  const { post, story } = useSelector((state) => state);
   const [reload, setReload] = useState(false);
   useEffect(() => {
     dispatch(getAllPost());
   }, [post.newComment, post.posts]);
 
+  useEffect(() => {
+    dispatch(getAllStoryByFollowing());
+  }, [story.stories]);
+
+  const navigate = useNavigate();
   const isUserFollowed = (userId) => {
     return auth.user.followings.includes(userId);
   };
-
   return (
-    <div className="px-20">
-      <Card className="flex items-center p-5 rounded-b-md">
-        <div className="flex flex-col items-center mr-4 cursor-pointer">
-          <Avatar sx={{ width: "5rem", height: "5rem" }}>
-            <AddIcon sx={{ fontSize: "3rem" }} />
-          </Avatar>
-          <p>New</p>
-        </div>
-        {story.map((item) => (
-          <StoryCircle />
-        ))}
-      </Card>
+    <div className="px-20 min-w-[100%] max-w-[100%]">
+      <div className="overflow-x-auto">
+        <Card className="flex items-center p-5 rounded-b-md overflow-x-auto">
+          <div className="flex flex-col items-center mr-4 cursor-pointer" onClick={handelOpenCreateStory}>
+            <Avatar sx={{ width: "5rem", height: "5rem" }}>
+              <AddIcon sx={{ fontSize: "3rem" }} />
+            </Avatar>
+            <p>New</p>
+          </div>
+          {story.stories.map((item) => (
+            <div  onClick={
+              () => navigate(`/story/${item.id}`) // Call handleClose function
+            }>
+               <StoryCircle item={item} key={item._id} />
+            </div>
+          ))}
+        </Card>
+      </div>
+
       <Card className="p-5 mt-5">
         <div className="flex justify-between">
           <Avatar src={auth?.user?.avatar} />
@@ -86,6 +107,8 @@ const MiddlePart = () => {
           handleClose={handelCloseCreatePost}
           auth={auth}
         />
+        <CreateStory open={openCreateStory} handleClose={handelCloseCreateStory}
+          auth={auth}/>
       </div>
     </div>
   );
