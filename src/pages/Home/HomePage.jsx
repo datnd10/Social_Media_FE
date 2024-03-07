@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/SideBar/SideBar";
 import { Routes, useLocation, Route } from "react-router-dom";
 
@@ -13,6 +13,8 @@ import { store } from "../../redux/store";
 import SuggestPeople from "../../components/MiddlePart/SuggestPeople";
 import Story from "../Story/Story";
 import ArchiveStory from "../Story/ArchireStory";
+import ListNontification from "../../components/Nontification/ListNontification";
+import DetailPost from "../DetailPost/DetailPost";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -20,12 +22,14 @@ const HomePage = () => {
   const jwt = localStorage.getItem("token");
   const { auth } = useSelector((store) => store);
 
+  const [showNontification, setShowNontification] = useState(false);
+
   return (
     <div>
       <Grid container spacing={0}>
         <Grid item xs={0} lg={2}>
           <div className="sticky top-0">
-            <Sidebar />
+            {showNontification ? <ListNontification setShowNontification={setShowNontification}/> : <Sidebar setShowNontification={setShowNontification}/>}
           </div>
         </Grid>
         <Grid item xs={0} lg={1}>
@@ -44,6 +48,7 @@ const HomePage = () => {
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/story/:id" element={<Story />} />
             <Route path="/archive/user/:userId/story/:storyId" element={<ArchiveStory />} />
+            <Route path="/detail/post/:id" element={<DetailPost />} />
           </Routes>
         </Grid>
         {location.pathname === "/" ? (

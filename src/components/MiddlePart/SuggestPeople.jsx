@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUser } from "../../redux/user/user.action";
 import { followUser } from "../../redux/auth/auth.action";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Button, CardHeader } from "@mui/material";
+import { Avatar, Button, Card, CardHeader } from "@mui/material";
 
 const SuggestPeople = () => {
   const dispatch = useDispatch();
@@ -32,30 +32,41 @@ const SuggestPeople = () => {
 
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col items-center h-screen mt-20 mr-48">
-      <div className="flex justify-start text-2xl font-semibold mr-72 my-5">Suggested</div>
-      {sortedUsers.map(
-        (item) =>
-          item.id !== auth.user.id &&
-          (isUserFollowed(item.id) ? null : (
-            <div key={item.id} className="flex justify-center items-center gap-40 space-y-4">
-              <a href={`/profile/${item.id}`}>
-                <CardHeader
-                  key={item.id}
-                  avatar={
-                    <Avatar src={item.avatar} aria-label="recipe"></Avatar>
-                  }
-                  title={item.firstName + " " + item.lastName}
-                  subheader="Suggested for you"
-                />
-              </a>
-              <Button size="small" variant="contained" onClick={() => handleFollowUser(item.id)}>
-                Follow
-              </Button>
-            </div>
-          ))
-      )}
-    </div>
+    <Card>
+      <div className="flex flex-col items-center h-screen p-5">
+        <div className="flex text-2xl font-semibold mr-72 my-5">
+          Suggested
+        </div>
+        {sortedUsers.map(
+          (item) =>
+            item.id !== auth.user.id &&
+            (isUserFollowed(item.id) ? null : (
+              <div
+                key={item.id}
+                className="flex justify-center items-center gap-40 space-y-4"
+              >
+                <a href={`/profile/${item.id}`}>
+                  <CardHeader
+                    key={item.id}
+                    avatar={
+                      <Avatar src={item.avatar} aria-label="recipe"></Avatar>
+                    }
+                    title={item.firstName + " " + item.lastName}
+                    subheader="Suggested for you"
+                  />
+                </a>
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => handleFollowUser(item.id)}
+                >
+                  Follow
+                </Button>
+              </div>
+            ))
+        )}
+      </div>
+    </Card>
   );
 };
 

@@ -16,7 +16,7 @@ const UserChatCard = ({chat}) => {
               bgcolor: "#191c29",
               color: "rbg(88, 199, 250)",
             }}
-            src="https://images.pexels.com/photos/18269258/pexels-photo-18269258/free-photo-of-woman-with-black-hair-in-shirt.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load"
+            src={auth.user?.id===chat.users[0].id ? chat.users[1].avatar : chat.users[0].avatar}
           ></Avatar>
         }
         action={

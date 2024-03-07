@@ -9,6 +9,8 @@ import {
   GET_ALL_POST_FAILURE,
   GET_ALL_POST_REQUEST,
   GET_ALL_POST_SUCCESS,
+  GET_POST_BY_ID_REQUEST,
+  GET_POST_BY_ID_SUCCESS,
   GET_SAVE_POST_REQUEST,
   GET_SAVE_POST_SUCCESS,
   GET_USERS_POST_FAILURE,
@@ -22,6 +24,7 @@ import {
 } from "./post.actionType";
 
 const initialState = {
+  detailPost: null,
   post: null,
   loading: false,
   error: null,
@@ -41,6 +44,7 @@ export const postReducer = (state = initialState, action) => {
     case DELETE_POST_REQUEST:
     case SAVE_POST_REQUEST:
     case GET_SAVE_POST_REQUEST:
+    case GET_POST_BY_ID_REQUEST:
       return {
         ...state,
         loading: true,
@@ -51,6 +55,14 @@ export const postReducer = (state = initialState, action) => {
         ...state,
         post: action.payload,
         posts: [action.payload, ...state.post],
+        loading: false,
+        error: null,
+      };
+
+    case GET_POST_BY_ID_SUCCESS:
+      return {
+        ...state,
+        detailPost: action.payload,
         loading: false,
         error: null,
       };

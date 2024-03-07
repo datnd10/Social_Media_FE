@@ -7,6 +7,7 @@ import { messageReducer } from "./message/message.reducer";
 import {  userReducer } from "./user/user.reducer";
 import { reelReducer } from "./reel/reel.reducer";
 import { storyReducer } from "./story/story.reducer";
+import { nontificationReducer } from "./nontifications/nontification.reducer";
 
 const rootReducers = combineReducers({
     auth: authReducer,
@@ -14,7 +15,8 @@ const rootReducers = combineReducers({
     message: messageReducer,
     user: userReducer,
     reel: reelReducer,
-    story: storyReducer
+    story: storyReducer,
+    nontification: nontificationReducer
 });
 
 export const store = legacy_createStore(rootReducers, applyMiddleware(thunk))

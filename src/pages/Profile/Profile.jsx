@@ -9,7 +9,11 @@ import PostCard from "../../components/Post/PostCard";
 import UserReelCard from "../../components/Reels/UserReelCard";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
-import { getSavePost, getUserSavePost, getUsersPost } from "../../redux/post/post.action";
+import {
+  getSavePost,
+  getUserSavePost,
+  getUsersPost,
+} from "../../redux/post/post.action";
 import {
   followUser,
   getUserbyId,
@@ -17,7 +21,7 @@ import {
 } from "../../redux/auth/auth.action";
 import ListUserCard from "../../components/ListUserCard/ListUserCard";
 import ListUserFollow from "../../components/ListUserCard/ListUserFollow";
-import BorderClearIcon from '@mui/icons-material/BorderClear';
+import BorderClearIcon from "@mui/icons-material/BorderClear";
 import { getUsersReel } from "../../redux/reel/reel.action";
 import { getUserStory } from "../../redux/story/story.action";
 import StoryCard from "../../components/Story/StoryCard";
@@ -37,7 +41,7 @@ const tabs = [
   {
     value: "archive",
     name: "Archive",
-  }
+  },
 ];
 
 const reels = [1, 1, 1, 1, 1];
@@ -188,21 +192,35 @@ const Profile = () => {
                 aria-label="wrapped label tabs example"
                 className="flex justify-center"
               >
-                {tabs.map((tab, index) => (
-                  <Tab
-                    key={tab.value}
-                    value={tab.value}
-                    label= {tab.name}
-                    wrapped
-                  />
-                ))}
+                {auth?.user?.id === auth?.profile?.id
+                  ? tabs.map((tab, index) => (
+                      <Tab
+                        key={tab.value}
+                        value={tab.value}
+                        label={tab.name}
+                        wrapped
+                      />
+                    ))
+                  : tabs.map((tab, index) => {
+                      if (tab.value !== "archive") {
+                        return (
+                          <Tab
+                            key={tab.value}
+                            value={tab.value}
+                            label={tab.name}
+                            wrapped
+                          />
+                        );
+                      }
+                      return null; // or handle the case when the condition is not met
+                    })}
               </Tabs>
             </div>
           </Box>
           <div className="flex justify-center">
             {value === "post" ? (
               <div className="space-y-5 w-[70%] my-10">
-                {post.posts.map((item) => (
+                {post.posts.length > 0 && post.posts.map((item) => (
                   <div
                     key={item.id}
                     className="border border-gray-300 rounded-md"
@@ -213,7 +231,7 @@ const Profile = () => {
               </div>
             ) : value === "reels" ? (
               <div className="flex justify-center flex-wrap gap-2 my-10">
-                {reel.userReel.map((item) => (
+                {reel?.userReel?.length > 0 && reel.userReel.map((item) => (
                   <div key={item.id}>
                     <UserReelCard reel={item} />
                   </div>
@@ -221,7 +239,7 @@ const Profile = () => {
               </div>
             ) : value === "saved" ? (
               <div className="space-y-5 w-[70%] my-10">
-                {post?.savePost.map((post) => (
+                {post?.savePost.length > 0 && post?.savePost.map((post) => (
                   <div
                     key={post.id}
                     className="border border-gray-300 rounded-md"
@@ -232,11 +250,15 @@ const Profile = () => {
               </div>
             ) : value === "archive" ? (
               <div className="w-[80%] my-10 flex gap-2">
-                {story.userStory.map((item) => (
+                {story.userStory.length > 0 && story.userStory.map((item) => (
                   <div
                     key={item.id}
                     className="border border-gray-300 rounded-md hover:cursor-pointer"
-                    onClick={() => navigate(`/archive/user/${auth.profile?.id}/story/${item.id}`)}
+                    onClick={() =>
+                      navigate(
+                        `/archive/user/${auth.profile?.id}/story/${item.id}`
+                      )
+                    }
                   >
                     <StoryCard story={item} />
                   </div>

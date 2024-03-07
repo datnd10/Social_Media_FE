@@ -35,6 +35,7 @@ import ListUserCard from "../ListUserCard/ListUserCard";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import UpdatePost from "../UpdatePost/UpdatePost";
 import { isSavedByReqUser } from "../../utils/isSavedByUser";
+import { useNavigate } from "react-router-dom";
 const PostCard = ({ post, reload, setReload }) => {
   const [showComment, setShowComment] = useState(false);
   const dispatch = useDispatch();
@@ -107,6 +108,8 @@ const PostCard = ({ post, reload, setReload }) => {
     setOpenUpdatePost(true);
   };
 
+  const navigate = useNavigate();
+
   return (
     <Card className="">
       <CardHeader
@@ -171,6 +174,8 @@ const PostCard = ({ post, reload, setReload }) => {
           image={post?.image}
           alt="Paella dish"
           sx={{ objectFit: "cover" }}
+          className="hover: cursor-pointer"
+          onClick={() => navigate(`/detail/post/${post?.id}`)}
         />
       )}
       {post?.video && (
@@ -180,7 +185,8 @@ const PostCard = ({ post, reload, setReload }) => {
           loop
           muted
           controls
-          className="w-full max-h-96"
+          className="w-full max-h-96 cursor-pointer"
+          onClick={() => navigate(`/detail/post/${post?.id}`)}
         ></video>
       )}
       <CardContent>
@@ -191,7 +197,7 @@ const PostCard = ({ post, reload, setReload }) => {
             </Typography>
           </a>
 
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" className="hover:cursor-pointer" onClick={() => navigate(`/detail/post/${post?.id}`)}>
             {post?.caption}
           </Typography>
         </div>

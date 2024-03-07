@@ -7,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-const Sidebar = () => {
+const Sidebar = ({setShowNontification}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -23,8 +23,13 @@ const Sidebar = () => {
 
   const handleNavigate = (item) => {
     if (item.title === "Profile") {
-      navigate(`/profile/${auth.user?.id}`);
-    } else {
+      navigate(`profile/${auth.user?.id}`);
+    } 
+    else if (item.title === "Nontifications") {
+      console.log(1);
+      setShowNontification(true);
+    }
+    else {
       navigate(item.path);
     }
   };

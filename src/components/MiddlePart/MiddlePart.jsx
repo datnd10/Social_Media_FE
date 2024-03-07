@@ -31,6 +31,7 @@ const MiddlePart = () => {
 
   const { post, story } = useSelector((state) => state);
   const [reload, setReload] = useState(false);
+  
   useEffect(() => {
     dispatch(getAllPost());
   }, [post.newComment, post.posts]);
@@ -39,10 +40,13 @@ const MiddlePart = () => {
     dispatch(getAllStoryByFollowing());
   }, [story.stories]);
 
+
   const navigate = useNavigate();
+
   const isUserFollowed = (userId) => {
     return auth.user.followings.includes(userId);
   };
+
   return (
     <div className="px-20 min-w-[100%] max-w-[100%]">
       <div className="overflow-x-auto">

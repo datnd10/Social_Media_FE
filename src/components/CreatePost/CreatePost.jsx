@@ -10,7 +10,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useDispatch } from "react-redux";
-import { createPost } from "../../redux/post/post.action";
+import { createPost, getAllPost } from "../../redux/post/post.action";
 import ClearIcon from "@mui/icons-material/Clear";
 const style = {
   position: "absolute",
@@ -66,6 +66,7 @@ const CreatePost = ({ open, handleClose, auth }) => {
       formik.setFieldValue("video", "");
       setSelectedImage("");
       setSelectedVideo("");
+      handleClose();
     },
   });
 

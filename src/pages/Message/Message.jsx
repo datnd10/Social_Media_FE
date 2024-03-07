@@ -29,6 +29,7 @@ const Message = () => {
   useEffect(() => {
     dispatch(getAllChats());
   }, []);
+  const [inputValue, setInputValue] = useState('');
 
   const handleCreateMessage = (value) => {
     const message = {
@@ -37,6 +38,7 @@ const Message = () => {
       image: selectedImage,
     };
     dispatch(createMessage({message, sendMessageToServer}));
+
   };
 
   const handleSelectImage = async (e) => {
@@ -96,6 +98,14 @@ const Message = () => {
     }
   },[messages])
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && inputValue) {
+      handleCreateMessage(inputValue);
+      setSelectedImage("");
+      setInputValue(''); // Clear the input value
+    }
+  };
+  
   return (
     <div>
       <Grid container className="h-screen overflow-y-hidden">
@@ -132,7 +142,7 @@ const Message = () => {
             <div>
             <div className="flex justify-between items-center border-l p-5">
               <div className="flex items-center space-x-3">
-                <Avatar src="https://images.pexels.com/photos/18269258/pexels-photo-18269258/free-photo-of-woman-with-black-hair-in-shirt.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load" />
+                <Avatar src={auth.user?.id===currentChat.users[0].id ? currentChat.users[1].avatar : currentChat.users[0].avatar} />
                 <p>{auth.user?.id===currentChat.users[0].id?currentChat.users[1].firstName + " " + currentChat.users[1].lastName:currentChat.users[0].firstName + " " + currentChat.users[0].lastName}</p>
               </div>
               <div className="flex space-x-3">
@@ -153,12 +163,9 @@ const Message = () => {
             {selectedImage && <img src={selectedImage} alt="avatar" className="w-[5rem] h-[5rem] object-cover px-2"/>}
               <div className="py-5 flex items-center justify-center space-x-5">
                 <input
-                onKeyPress={(e) => {
-                  if(e.key === "Enter" && e.target.value) {
-                    handleCreateMessage(e.target.value);
-                    setSelectedImage("");
-                  }
-                }}
+                value={inputValue}
+                onKeyPress={handleKeyPress}
+                onChange={(e) => setInputValue(e.target.value)}
                   type="text"
                   className="bg-transparent border border-[#3b40544] rounded-full w-[90%] py-3 px-5"
                   placeholder="Type a message"

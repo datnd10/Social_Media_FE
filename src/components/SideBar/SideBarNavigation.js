@@ -20,7 +20,6 @@ export const navigationMenu = [
     {
         title:"Nontifications",
         icon: <NotificationsIcon/>,
-        path:"/"
     },
     {
         title:"Message",
