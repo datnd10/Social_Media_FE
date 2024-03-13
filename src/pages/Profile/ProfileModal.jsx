@@ -66,6 +66,7 @@ const ProfileModal = ({ open, handleClose }) => {
     onSubmit: (values) => {
       console.log(values);
       dispatch(updateProfile(values));
+      closeModal();
     },
   });
 
