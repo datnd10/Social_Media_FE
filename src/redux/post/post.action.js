@@ -1,4 +1,4 @@
-import { CREATE_COMMENT_FAILURE, CREATE_COMMENT_REQUEST, CREATE_COMMENT_SUCCESS, CREATE_POST_FAILURE, CREATE_POST_REQUEST, CREATE_POST_SUCCESS, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, GET_ALL_POST_FAILURE, GET_ALL_POST_REQUEST, GET_ALL_POST_SUCCESS, GET_POST_BY_ID_FAILURE, GET_POST_BY_ID_REQUEST, GET_POST_BY_ID_SUCCESS, GET_SAVE_POST_FAILURE, GET_SAVE_POST_REQUEST, GET_SAVE_POST_SUCCESS, GET_USERS_POST_FAILURE, GET_USERS_POST_REQUEST, GET_USERS_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, SAVE_POST_FAILURE, SAVE_POST_REQUEST, SAVE_POST_SUCCESS } from "./post.actionType";
+import { CREATE_COMMENT_FAILURE, CREATE_COMMENT_REQUEST, CREATE_COMMENT_SUCCESS, CREATE_POST_FAILURE, CREATE_POST_REQUEST, CREATE_POST_SUCCESS, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, GET_ALL_POST_FAILURE, GET_ALL_POST_REQUEST, GET_ALL_POST_SUCCESS, GET_POST_BY_ID_FAILURE, GET_POST_BY_ID_REQUEST, GET_POST_BY_ID_SUCCESS, GET_SAVE_POST_FAILURE, GET_SAVE_POST_REQUEST, GET_SAVE_POST_SUCCESS, GET_USERS_POST_FAILURE, GET_USERS_POST_REQUEST, GET_USERS_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, SAVE_POST_FAILURE, SAVE_POST_REQUEST, SAVE_POST_SUCCESS, UPDATE_POST_FAILURE, UPDATE_POST_REQUEST, UPDATE_POST_SUCCESS } from "./post.actionType";
 import { API_BASE_URL, api } from "../../config/api"
 export const createPost = (postData) => async (dispatch) => {
     dispatch({type: CREATE_POST_REQUEST});
@@ -15,7 +15,7 @@ export const createPost = (postData) => async (dispatch) => {
 export const deletePost = (postId) => async (dispatch) => {
     dispatch({type: DELETE_POST_REQUEST});
     try {
-        const {data} = await api.delete(`/api/posts/${postId}`);
+        const {data} = await api.put(`/api/posts/${postId}`);
         dispatch({type: DELETE_POST_REQUEST,  payload: data});
         console.log(data);
     } catch (error) {
@@ -107,5 +107,18 @@ export const getUserSavePost = (userId) => async (dispatch) => {
     } catch (error) {
         console.log(error);
         dispatch({type: GET_SAVE_POST_FAILURE, payload: error});
+    }
+}
+
+
+export const updatePostByID = (postData, postId) => async (dispatch) => {
+    dispatch({type: UPDATE_POST_REQUEST});
+    try {
+        const {data} = await api.put(`/api/posts/update/${postId}`, postData);
+        dispatch({type: UPDATE_POST_SUCCESS,  payload: data});
+        console.log(data);
+    } catch (error) {
+        console.log(error);
+        dispatch({type: UPDATE_POST_FAILURE, payload: error});
     }
 }

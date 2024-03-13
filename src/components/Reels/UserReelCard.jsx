@@ -5,25 +5,21 @@ import { followUser, unFollowUser } from "../../redux/auth/auth.action";
 import { deleteReel, getAllReel } from "../../redux/reel/reel.action";
 import DeleteIcon from "@mui/icons-material/Delete";
 const UserReelCard = ({ reel }) => {
-  console.log(reel);
+
   const dispatch = useDispatch();
   const { auth } = useSelector((store) => store);
-  const [reload, setReload] = useState(false);
 
-
-  const handleDeleteReel = (postId) => {
-    dispatch(deleteReel(postId));
-    setReload(!reload);
+  const handleDeleteReel = async (postId) => {
+    await dispatch(deleteReel(postId));
+    await dispatch(getAllReel());
   };
 
-  const handleFollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(followUser(userId));
+  const handleFollowUser = async (userId) => {
+    await dispatch(followUser(userId));
   };
 
-  const handleUnfollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(unFollowUser(userId));
+  const handleUnfollowUser = async (userId) => {
+    await dispatch(unFollowUser(userId));
   };
 
   const isUserFollowed = (userId) => {
@@ -31,10 +27,10 @@ const UserReelCard = ({ reel }) => {
   };
 
   return (
-    <div className="relative space-y-5 min-w-full w-full my-5">
+    <div className="relative space-y-5 w-[40vw] h-[90vh] my-3">
       <video
         autoPlay loop muted controls
-        className="w-full min-w-full h-96 object-cover"
+        className="w-[40vw] h-[90vh] object-cover"
         src={reel.video}
       />
       <div className="absolute bottom-12 left-0 right-0 bg-transparent p-4 w-full">

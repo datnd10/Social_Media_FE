@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import SearchUser from "../SearchUser/SearchUser";
 import { Avatar, Button, Card, CardHeader } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUser } from "../../redux/user/user.action";
 import { followUser, unFollowUser } from "../../redux/auth/auth.action";
 import { useNavigate } from "react-router-dom";
+import SearchUserChat from "../SearchUser/SearchUserChat";
+import SearchUserProfile from "../SearchUser/SearchUserProfile";
 
 const popularUser = [1, 1, 1, 1];
 const HomeRight = () => {
@@ -17,8 +18,7 @@ const HomeRight = () => {
 
   useEffect(() => {
     dispatch(getAllUser());
-    console.log(user);
-  },[reload])
+  },[])
 
   const isUserFollowed = (userId) => {
     return auth.user.followings.includes(userId);
@@ -26,16 +26,16 @@ const HomeRight = () => {
 
   const sortedUsers = user.listUser.slice().sort((a, b) => b.followers.length - a.followers.length);
 
-  const handleFollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(followUser(userId));
+  const handleFollowUser = async (userId) => {
+    await dispatch(followUser(userId));
+    await dispatch(getAllUser());
   };
 
   const navigate = useNavigate();
 
   return (
     <div className="pr-5">
-      <SearchUser />
+      <SearchUserProfile />
       <Card className="p-5 bg-white">
         <div className="flex justify-between py-5 items-center">
           <p className="font-semibold opacity-70">Suggestions for</p>

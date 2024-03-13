@@ -17,7 +17,7 @@ import { useRef } from "react";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useState } from "react";
 import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
-import { createReel } from "../../redux/reel/reel.action";
+import { createReel, getAllReel } from "../../redux/reel/reel.action";
 const style = {
   position: "absolute",
   top: "50%",
@@ -53,11 +53,23 @@ const CreateReelModal = ({ open, handleClose }) => {
       title: "",
       video: ""
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
-      dispatch(createReel(values));
+      await dispatch(createReel(values));
+      await dispatch(getAllReel());
+      setSelectedVideo("");
+      formik.setFieldValue("title", "");
+      formik.setFieldValue("video", "");
+      handleClose();
     },
   });
+
+  const handleClostModal = () => {
+    setSelectedVideo("");
+      formik.setFieldValue("title", "");
+      formik.setFieldValue("video", "");
+      handleClose();
+  }
 
   return (
     <div>
@@ -70,7 +82,7 @@ const CreateReelModal = ({ open, handleClose }) => {
           <form onSubmit={formik.handleSubmit}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <IconButton onClick={handleClose}>
+                <IconButton onClick={handleClostModal}>
                   <CloseIcon />
                 </IconButton>
                 <p>Create Reel</p>

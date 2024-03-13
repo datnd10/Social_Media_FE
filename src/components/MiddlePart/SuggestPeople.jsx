@@ -14,8 +14,7 @@ const SuggestPeople = () => {
 
   useEffect(() => {
     dispatch(getAllUser());
-    console.log(user);
-  }, [reload]);
+  }, []);
 
   const isUserFollowed = (userId) => {
     return auth.user.followings.includes(userId);
@@ -25,9 +24,9 @@ const SuggestPeople = () => {
     .slice()
     .sort((a, b) => b.followers.length - a.followers.length);
 
-  const handleFollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(followUser(userId));
+  const handleFollowUser = async (userId) => {
+    await dispatch(followUser(userId));
+    await dispatch(getAllUser());
   };
 
   const navigate = useNavigate();

@@ -13,7 +13,7 @@ const Reels = () => {
 
   useEffect(() => {
     dispatch(getAllReel());
-  }, [reel.listReel]);
+  }, []);
 
   const [open, setOpen] = useState(false);
   const handleOpenProfileModal = () => setOpen(true);

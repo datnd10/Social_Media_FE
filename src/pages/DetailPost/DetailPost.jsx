@@ -30,10 +30,11 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { isSavedByReqUser } from "../../utils/isSavedByUser";
 import ListUserCard from "../../components/ListUserCard/ListUserCard";
 import UpdatePost from "../../components/UpdatePost/UpdatePost";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   createComment,
   deletePost,
+  getAllPost,
   getLikePost,
   getPostById,
   getSavePost,
@@ -41,35 +42,37 @@ import {
 
 const DetailPost = ({ reload, setReload }) => {
   const { id } = useParams();
-  console.log(id);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getPostById(id));
   }, [id]);
 
-  const [showComment, setShowComment] = useState(false);
+  const [showComment, setShowComment] = useState(true);
   const dispatch = useDispatch();
 
   const { auth, post } = useSelector((state) => state);
 
-  const handleCreateComment = (content) => {
+  const handleCreateComment = async (content) => {
     const reqData = {
       postId: post.detailPost.id,
       data: {
         content,
       },
     };
-    dispatch(createComment(reqData))
-    .then(() => dispatch(getPostById(id)));
+    await dispatch(createComment(reqData))
+    await dispatch(getPostById(id));
   };
 
-  const handleLikePost = (post) => {
-    dispatch(getLikePost(post.id))
-    .then(() => dispatch(getPostById(id)));
+  const handleLikePost = async (post) => {
+    await dispatch(getLikePost(post.id))
+    await dispatch(getPostById(id));
   };
 
-  const handleSavePost = (post) => {
-    dispatch(getSavePost(post.id));
+  const handleSavePost = async (post) => {
+    await dispatch(getSavePost(post.id))
+    await dispatch(getPostById(id));
   };
 
   const [open, setOpen] = React.useState(false);
@@ -108,15 +111,15 @@ const DetailPost = ({ reload, setReload }) => {
     setAnchorEl(null);
   };
 
-  const handleDeletePost = (postId) => {
-    setReload(!reload);
-    dispatch(deletePost(postId));
+  const handleDeletePost = async (postId) => {
+    await dispatch(deletePost(postId));
+    await dispatch(getAllPost());
+    navigate("/");
   };
-  const [updatePost, setUpdatePost] = useState();
+
   const [openUpdatePost, setOpenUpdatePost] = useState();
   const handelCloseUpdatePost = () => setOpenUpdatePost(false);
   const handelOpenUpdatePost = () => {
-    setUpdatePost(post);
     setOpenUpdatePost(true);
   };
 
@@ -126,7 +129,7 @@ const DetailPost = ({ reload, setReload }) => {
         {post?.detailPost?.image && (
           <CardMedia
             component="img"
-            className="min-h-[100vh] object-cover max-w-[70vw]"
+            className="min-h-[100vh] max-h-[100vh]x  object-cover  w-[50vw]"
             image={post?.detailPost?.image}
             alt="Paella dish"
             sx={{ objectFit: "cover" }}
@@ -139,11 +142,11 @@ const DetailPost = ({ reload, setReload }) => {
             loop
             muted
             controls
-            className="min-h-[100vh] object-cover max-w-[70vw]"
+            className="min-h-[100vh] max-h-[100vh] object-cover  w-[50vw]"
           ></video>
         )}
       </Card>
-      <Card className="min-w-[20vw]">
+      <Card className={post?.detailPost?.image || post?.detailPost?.video ? "min-w-[20vw]" : "min-w-[40vw]"}>
         <CardHeader
           avatar={
             <a href={`/profile/${post?.detailPost?.user?.id}`}>
@@ -178,7 +181,7 @@ const DetailPost = ({ reload, setReload }) => {
                   <MenuItem
                     onClick={() => {
                       handleCloseSetting(); // Call handleClose function
-                      handleDeletePost(post.id);
+                      handleDeletePost(post?.detailPost?.id);
                     }}
                   >
                     Delete
@@ -234,9 +237,6 @@ const DetailPost = ({ reload, setReload }) => {
                 <FavoriteBorderIcon />
               )}
             </IconButton>
-            <IconButton>
-              <ShareIcon />
-            </IconButton>
             <IconButton onClick={() => setShowComment(!showComment)}>
               {showComment ? <ChatBubbleIcon /> : <ChatBubbleOutlineIcon />}
             </IconButton>
@@ -273,7 +273,7 @@ const DetailPost = ({ reload, setReload }) => {
             </div>
             <Divider />
             <div className="mx-3 space-y-5 my-5 text-xs max-h-[64vh] overflow-auto">
-              {post?.detailPost.comments.map((comment) => (
+              {post?.detailPost?.comments.map((comment) => (
                 <div className="flex items-center space-x-5" key={comment.id}>
                   <a
                     className="flex items-center gap-3"
@@ -306,7 +306,7 @@ const DetailPost = ({ reload, setReload }) => {
           open={openUpdatePost}
           handleClose={handelCloseUpdatePost}
           auth={auth}
-          updatePost={updatePost}
+          updatePost={post?.detailPost}
         />
       </Card>
     </>

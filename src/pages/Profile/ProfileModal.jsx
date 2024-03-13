@@ -41,22 +41,26 @@ const ProfileModal = ({ open, handleClose }) => {
     fileInputRef.current.click();
   };
 
+  const [openBackDrop, setOpenBackDrop] = useState(false);
+
   const handleFileChange = async (event) => {
-    //setIsLoading(true);
+    setOpenBackDrop(true);
     const imageUrl = await uploadToCloudinary(event.target.files[0], "image");
     console.log(imageUrl);
     setSelectedImage(imageUrl);
     formik.setFieldValue("avatar", imageUrl);
-    //setIsLoading(false);
+    setOpenBackDrop(false);
   };
 
-  const initialBio = auth.user.bio ? auth.user.bio.replace(/<br\s*\/?>/gi, "\n") : "";
+  const initialBio = auth.user.bio
+    ? auth.user.bio.replace(/<br\s*\/?>/gi, "\n")
+    : "";
 
   const formik = useFormik({
     initialValues: {
       firstName: auth.user.firstName || "",
       lastName: auth.user.lastName || "",
-      avatar: selectedImage,
+      avatar:  auth.user.avatar,
       bio: initialBio,
     },
     onSubmit: (values) => {
@@ -64,6 +68,15 @@ const ProfileModal = ({ open, handleClose }) => {
       dispatch(updateProfile(values));
     },
   });
+
+  const closeModal = () => {
+    setSelectedImage("");
+    formik.setFieldValue("firstName",auth.user.firstName);
+    formik.setFieldValue("lastName",auth.user.lastName );
+    formik.setFieldValue("avatar", auth.user.avatar);
+    formik.setFieldValue("bio",initialBio);
+    handleClose();
+  }
 
   return (
     <div>
@@ -76,7 +89,7 @@ const ProfileModal = ({ open, handleClose }) => {
           <form onSubmit={formik.handleSubmit}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <IconButton onClick={handleClose}>
+                <IconButton onClick={closeModal}>
                   <CloseIcon />
                 </IconButton>
                 <p>Edit Profile</p>
@@ -137,6 +150,12 @@ const ProfileModal = ({ open, handleClose }) => {
               />
             </div>
           </form>
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={openBackDrop}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </Box>
       </Modal>
     </div>

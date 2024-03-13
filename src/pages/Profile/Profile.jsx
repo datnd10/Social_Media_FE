@@ -55,7 +55,7 @@ const Profile = () => {
 
   useEffect(() => {
     dispatch(getUserbyId(id));
-  }, [id, auth.profile?.followers]);
+  }, [id]);
 
   useEffect(() => {
     dispatch(getUsersPost(id));
@@ -71,12 +71,14 @@ const Profile = () => {
     setValue(newValue);
   };
 
-  const handleFollowUser = (userId) => {
-    dispatch(followUser(userId));
+  const handleFollowUser = async (userId) => {
+    await dispatch(followUser(userId));
+    await dispatch(getUserbyId(id));
   };
 
-  const handleUnfollowUser = (userId) => {
-    dispatch(unFollowUser(userId));
+  const handleUnfollowUser = async (userId) => {
+    await dispatch(unFollowUser(userId));
+    await dispatch(getUserbyId(id));
   };
 
   const [open, setOpen] = useState(false);
@@ -91,7 +93,6 @@ const Profile = () => {
   const handleOpenFollowings = () => setOpenFollowings(true);
   const handleCloseFollowings = () => setOpenFollowings(false);
 
-  console.log(post);
 
   return (
     <Card className=" w-[70%]">

@@ -12,11 +12,12 @@ import { WATCH_NONTIFICATION_SUCCESS } from "../../redux/nontifications/nontific
 import { useNavigate } from "react-router-dom";
 const ListNontification = ({ setShowNontification }) => {
   const dispatch = useDispatch();
-  const { nontification } = useSelector((state) => state);
+  const { auth,nontification } = useSelector((state) => state);
 
   const navigate = useNavigate();
   const getNontification = () => {
-    dispatch(getUserNontification());
+    dispatch(getUserNontification(auth.user.id));
+
   };
 
   useEffect(() => {
@@ -47,25 +48,70 @@ const ListNontification = ({ setShowNontification }) => {
     }
   }
 
-  const handleSeenNontification = (id) => {
-    dispatch(watchNontification(id));
+
+  const handleSeenNontification = (nontificationId, postId) => {
+    dispatch(watchNontification(nontificationId));
     setShowNontification(false)
-    navigate(`/detail/post/${id}`);
+    navigate(`/detail/post/${postId}`);
   }
 
   return (
-    <Card className="card h-screen flex flex-col justify-between py-5">
-      <div>
-        <div className="flex text-2xl font-semibold items-center justify-between my-7 px-2">
-          <p>Nontifications</p>
-          <CloseIcon
-            onClick={() => setShowNontification(false)}
-            className="hover:cursor-pointer"
-          />
-        </div>
+    // <Card className="card h-screen flex flex-col justify-between p-5">
+    //   <div>
+    //     <div className="flex text-2xl font-semibold items-center justify-between my-7 px-2">
+    //       <p>Nontifications</p>
+    //       <CloseIcon
+    //         onClick={() => setShowNontification(false)}
+    //         className="hover:cursor-pointer"
+    //       />
+    //     </div>
 
-        <div className="space-y-2">
-          {nontification?.nontifications?.length > 0 && nontification?.nontifications?.map((item, index) => (
+    //     <div className="space-y-2 overflow-y-auto">
+    //       {nontification?.nontification?.length > 0 && nontification?.nontification?.map((item, index) => (
+    //         <div key={index}>
+    //           <CardHeader
+    //             style={{
+    //               border: "1px solid #ddd",
+    //               borderRadius: "8px",
+    //               backgroundColor: !item.isRead ? "#7986cb" : "#3949ab",
+    //             }}
+    //             onClick={() => handleSeenNontification(item.id,item.post.id)}
+    //             avatar={
+    //               <Avatar
+    //                 src={item?.fromUser?.avatar}
+    //                 aria-label="recipe"
+    //               ></Avatar>
+    //             }
+    //             title={
+    //               <div className="flex gap-5">
+    //                 <div>
+    //                   <span>{item?.content} </span>
+    //                   <span className="text-gray-400 italic">
+    //                     {calculateTimeAgo(item.createdAt)}
+    //                   </span>
+    //                 </div>
+    //               </div>
+    //             }
+    //           />
+    //         </div>
+    //       ))}
+    //     </div>
+    //   </div>
+    // </Card>
+    <Card className="card h-screen flex flex-col justify-between p-5">
+  <div>
+    <div className="flex text-2xl font-semibold items-center justify-between my-7 px-2">
+      <p>Notifications</p>
+      <CloseIcon
+        onClick={() => setShowNontification(false)}
+        className="hover:cursor-pointer"
+      />
+    </div>
+
+    <div className="h-[90vh] overflow-y-auto">
+      <div className="space-y-2">
+        {nontification?.nontification?.length > 0 &&
+          nontification?.nontification?.map((item, index) => (
             <div key={index}>
               <CardHeader
                 style={{
@@ -73,7 +119,7 @@ const ListNontification = ({ setShowNontification }) => {
                   borderRadius: "8px",
                   backgroundColor: !item.isRead ? "#7986cb" : "#3949ab",
                 }}
-                onClick={() => handleSeenNontification(item.id)}
+                onClick={() => handleSeenNontification(item.id, item.post.id)}
                 avatar={
                   <Avatar
                     src={item?.fromUser?.avatar}
@@ -83,12 +129,7 @@ const ListNontification = ({ setShowNontification }) => {
                 title={
                   <div className="flex gap-5">
                     <div>
-                      <span style={{ marginRight: "5px" }}>
-                        {item?.fromUser?.firstName +
-                          " " +
-                          item?.fromUser?.lastName}
-                      </span>
-                      <span>{item?.content} </span>
+                      <span>{item?.content}</span>
                       <span className="text-gray-400 italic">
                         {calculateTimeAgo(item.createdAt)}
                       </span>
@@ -98,9 +139,11 @@ const ListNontification = ({ setShowNontification }) => {
               />
             </div>
           ))}
-        </div>
       </div>
-    </Card>
+    </div>
+  </div>
+</Card>
+
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { useFormik } from "formik";
@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useDispatch } from "react-redux";
 import ClearIcon from "@mui/icons-material/Clear";
+import { getAllPost, updatePostByID } from "../../redux/post/post.action";
 const style = {
   position: "absolute",
   top: "50%",
@@ -24,13 +25,16 @@ const style = {
   outline: "none",
 };
 const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
-  const [selectedImage, setSelectedImage] = useState();
-  const [selectedVideo, setSelectedVideo] = useState();
+  const [selectedImage, setSelectedImage] = useState(updatePost?.image);
+  const [selectedVideo, setSelectedVideo] = useState(updatePost?.video);
   const [isLoading, setIsLoading] = useState(false);
 
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch(); 
+  
   const handleSelectImage = async (event) => {
+    formik.setFieldValue("video", "");
+    setSelectedVideo("");
     setIsLoading(true);
     const imageUrl = await uploadToCloudinary(event.target.files[0], "image");
     setSelectedImage(imageUrl);
@@ -39,8 +43,10 @@ const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
   };
 
   const handleSelectVideo = async (event) => {
+    formik.setFieldValue("image", "");
+    setSelectedImage("");
     setIsLoading(true);
-    const videoUrl = await uploadToCloudinary(event.target.files[0]);
+    const videoUrl = await uploadToCloudinary(event.target.files[0], "video");
     setSelectedVideo(videoUrl);
     setIsLoading(false);
     formik.setFieldValue("video", videoUrl);
@@ -49,14 +55,29 @@ const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
   const formik = useFormik({
     initialValues: {
       caption: updatePost?.caption || "",
-      image: "",
-      video: "",
+      image: updatePost?.image,
+      video: updatePost?.video,
     },
-    onSubmit: (values) => {
-      console.log(values);
-      dispatch(UpdatePost(values));
+    onSubmit: async (values) => {
+      await dispatch(updatePostByID(values,updatePost?.id))
+      await dispatch(getAllPost());
+      formik.setFieldValue("caption", "");
+      formik.setFieldValue("image", "");
+      formik.setFieldValue("video", "");
+      setSelectedImage("");
+      setSelectedVideo("");
+      handleClose();
     },
   });
+
+  const closeModal = () => {
+    setSelectedImage(updatePost?.image);
+    setSelectedVideo(updatePost?.video);
+    formik.setFieldValue("image", updatePost?.image);
+    formik.setFieldValue("video", updatePost?.video);
+    formik.setFieldValue("caption", updatePost?.caption);
+    handleClose();
+  }
 
   return (
     <>
@@ -82,7 +103,7 @@ const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
                 </div>
                 <ClearIcon
                   className="cursor-pointer"
-                  onClick={handleClose}
+                  onClick={closeModal}
                 ></ClearIcon>
               </div>
               <textarea
@@ -119,7 +140,7 @@ const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
                     style={{ display: "none" }}
                   />
                   <label htmlFor="video-input">
-                    <IconButton color="primary">
+                    <IconButton color="primary" component="span">
                       <VideoCameraBackIcon />
                     </IconButton>
                   </label>
@@ -129,6 +150,19 @@ const UpdatePost = ({ open, handleClose, auth, updatePost }) => {
               {selectedImage && (
                 <div>
                   <img src={selectedImage} className="h-[10rem]" alt="" />
+                </div>
+              )}
+              {selectedVideo && (
+                <div>
+                  <video
+                    src={selectedVideo}
+                    autoPlay
+                    loop
+                    muted
+                    controls
+                    className="h-[15rem] w-full object-cover my-10"
+                    alt=""
+                  ></video>
                 </div>
               )}
               <div className="flex w-full justify-end">

@@ -4,7 +4,6 @@ import WestIcon from "@mui/icons-material/West";
 import AddIcCallIcon from "@mui/icons-material/AddIcCall";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import SearchUser from "../../components/SearchUser/SearchUser";
 import "./Message.css";
 import UserChatCard from "./UserChatCard";
 import ChatMessage from "./ChatMessage";
@@ -16,6 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { useNavigate } from "react-router-dom";
+import SearchUserChat from "../../components/SearchUser/SearchUserChat";
 
 const Message = () => {
   const { message, auth } = useSelector((store) => store);
@@ -89,7 +89,7 @@ const Message = () => {
   const onMessageReceived = (payload) => {
     const receivedMessage = JSON.parse(payload.body);
     console.log("Message received...", receivedMessage);
-    setMessages([...messages, receivedMessage]);
+    setMessages([...messages, receivedMessage]);                        
   }
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const Message = () => {
 
               <div className="h-[83vh]">
                 <div className="">
-                  <SearchUser />
+                  <SearchUserChat />
                 </div>
                 <div className="h-full space-y-4 mt-5 overflow-y-scroll hideScrollbar">
                   {message.chats.map((item) => (

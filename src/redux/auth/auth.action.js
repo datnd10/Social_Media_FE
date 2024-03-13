@@ -13,6 +13,7 @@ import {
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
+  LOG_OUT_SUCCESS,
   SEARCH_USER_FAILURE,
   SEARCH_USER_REQUEST,
   SEARCH_USER_SUCCESS,
@@ -53,8 +54,8 @@ export const registerUser = (loginData) => async (dispatch) => {
     if (data.token) {
       localStorage.setItem("token", data.token);
     }
-    console.log(data);
     dispatch({ type: LOGIN_SUCCESS, payload: data.token });
+    return data;
   } catch (error) {
     console.log(error);
     dispatch({ type: LOGIN_FAILURE, payload: error });
@@ -89,9 +90,11 @@ export const updateProfile = (reqData) => async (dispatch) => {
 };
 
 export const searchUser = (query) => async (dispatch) => {
+  console.log(query);
   dispatch({ type: SEARCH_USER_REQUEST });
   try {
     const { data } = await api.get(`/api/users/search?query=${query}`);
+    console.log(data);
     dispatch({ type: SEARCH_USER_SUCCESS, payload: data });
   } catch (error) {
     console.log(error);

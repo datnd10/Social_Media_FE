@@ -14,8 +14,7 @@ import {
 } from "./nontification.actionType";
 
 const initialState = {
-  nontification: null,
-  nontifications: [],
+  nontification: [],
   error: null,
   message: null,
 };
@@ -31,15 +30,13 @@ export const nontificationReducer = (state = initialState, action) => {
       return {
         ...state,
         nontification: action.payload,
-        nontifications: [action.payload, ...state.nontification],
       };
     case GET_NONTIFICATION_USER_SUCCESS:
-      console.log(action.payload);
-      return { ...state, nontifications: action.payload };
+      return { ...state, nontification: action.payload };
     case WATCH_NONTIFICATION_SUCCESS:
-      return { ...state, nontifications: action.payload };
+      return { ...state, nontification: action.payload };
     case DELETE_NONTIFICATION_SUCCESS:
-      return { ...state, nontifications: action.payload };
+      return { ...state, nontification: action.payload };
     case CREATE_NONTIFICATION_FAILURE:
     case GET_NONTIFICATION_USER_FAILURE:
     case WATCH_NONTIFICATION_FAILURE:

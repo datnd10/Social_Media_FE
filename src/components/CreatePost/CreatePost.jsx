@@ -58,9 +58,10 @@ const CreatePost = ({ open, handleClose, auth }) => {
       image: "",
       video: "",
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
-      dispatch(createPost(values));
+      await dispatch(createPost(values));
+      await dispatch(getAllPost());
       formik.setFieldValue("caption", "");
       formik.setFieldValue("image", "");
       formik.setFieldValue("video", "");

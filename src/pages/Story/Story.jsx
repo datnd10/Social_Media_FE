@@ -6,6 +6,7 @@ import {
   getAllStoryByFollowing,
   getDetailStory,
   getLikeStory,
+  replyStory,
   watchStory,
 } from "../../redux/story/story.action";
 import {
@@ -26,10 +27,15 @@ import { isReactStoryByReqUser } from "../../utils/isReactStoryByUser";
 import ListUserCard from "../../components/ListUserCard/ListUserCard";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import {
+  createChat,
+  createMessage,
+  findChat,
+} from "../../redux/message/message.action";
 const Story = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { story, auth } = useSelector((state) => state);
+  const { story, auth, message } = useSelector((state) => state);
   const [storyArray, setStoryArray] = useState([]);
 
   const navigate = useNavigate();
@@ -40,9 +46,12 @@ const Story = () => {
     dispatch(watchStory(id));
   }, [id]);
 
+  const [contentReply, setContentReply] = useState("");
+
   useEffect(() => {
     getStoryToView();
-  }, [id, story.story]);
+  }, [id]);
+
   const calculateTimeAgo = (createdAt) => {
     const createdDate = new Date(createdAt);
     const currentDate = new Date();
@@ -66,12 +75,16 @@ const Story = () => {
     return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
   };
 
-  const handleLikeStory = (post) => {
-    dispatch(getLikeStory(post.id));
+  const handleLikeStory = async (post) => {
+    await dispatch(getLikeStory(post.id));
+    await dispatch(getAllStoryByFollowing());
   };
 
-  const handleDeleteStory = (id) => {
-    dispatch(deleteStory(id));
+  const handleDeleteStory = async (id) => {
+    await dispatch(deleteStory(id));
+    await dispatch(getAllStoryByFollowing());
+    handleNextStory();
+    
   };
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -100,9 +113,11 @@ const Story = () => {
 
   const handleNextStory = () => {
     const index = storyArray.findIndex((item) => item == id);
-    console.log(index);
     if (index < storyArray.length - 1) {
       navigate(`/story/${storyArray[index + 1]}`);
+    }
+    else {
+      navigate('/');
     }
   };
 
@@ -114,33 +129,20 @@ const Story = () => {
     }
   };
 
-  const [progress, setProgress] = React.useState(0);
+  const handleCreateMessage = () => {
+    dispatch(createChat({ userId: story?.story?.user?.id }));
+    dispatch(findChat({ userId: story?.story?.user?.id }));
 
-  React.useEffect(() => {
-    const duration = 5000; // 5 seconds
-    const interval = 50; // Update every 50 milliseconds
-    const steps = duration / interval;
-    let count = 0;
-
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        count += 1;
-        if (count >= steps) {
-          clearInterval(timer);
-          handleNextStory();
-          setProgress(0); // Làm mới giá trị của progress khi hoàn thành
-          return 0;
-        }
-        const diff = (100 / steps) * count;
-        return Math.min(diff, 100);
-      });
-    }, interval);
-
-    return () => {
-      clearInterval(timer);
+    const messageReq = {
+      content: contentReply,
     };
-  }, [handleNextStory]);
+    dispatch(replyStory(id, message?.chat?.id, messageReq));
+    setContentReply("");
+  };
 
+  const [openReact, setOpenReact] = React.useState(false);
+  const handleOpenReact = () => setOpenReact(true);
+  const handleCloseReact = () => setOpenReact(false);
   return (
     <div className="flex items-center gap-10">
       {checPrevious() && (
@@ -152,103 +154,116 @@ const Story = () => {
       )}
       <div className="flex-shrink-0">
         <Card>
-          <CardHeader
-            avatar={
-              <a href={`/profile/${story?.user?.id}`}>
-                <Avatar
-                  src={story.story?.user?.avatar}
-                  sx={{ objectFit: "cover" }}
-                  aria-label="recipe"
-                />
-              </a>
-            }
-            action={
-              auth?.user?.id === story.story?.user?.id && (
-                <div>
-                  <Button
-                    id="basic-button"
-                    aria-haspopup="true"
-                    onClick={() => {
-                      handleDeleteStory(story.story.id);
-                    }}
-                  >
-                    <DeleteIcon className="text-white" />
-                  </Button>
-                </div>
-              )
-            }
-            title={
-              <div>
-                <a href={`/profile/${story.story?.user?.id}`}>
-                  {story.story?.user?.firstName +
-                    " " +
-                    story.story?.user?.lastName}
-                </a>
-                <p className="font-xs text-slate-500">
-                  {calculateTimeAgo(story.story?.createdAt)}
-                </p>
-              </div>
-            }
-          />
-
           {story.story?.image && (
-            <div>
-              <Box sx={{ width: "100%" }}>
-                <LinearProgress variant="determinate" value={progress} />
-              </Box>
+            <div className="relative">
               <img
                 src={story.story?.image}
-                className="h-[90vh] w-[800px] object-cover"
+                className="h-[100vh] w-[800px] object-cover"
                 alt=""
               />
-            </div>
-          )}
-          {story.story?.video && (
-            <video
-              src={story.story?.video}
-              autoPlay
-              loop
-              muted
-              controls
-              className="h-[90vh] w-[800px] object-cover"
-            ></video>
-          )}
-          {story?.story?.user?.id == auth?.user?.id && (
-            <div className="p-3 hover:cursor-pointer " onClick={handleOpen}>
-              {story?.story?.watchedBy.length} views
-            </div>
-          )}
-          {story?.story?.user?.id != auth?.user?.id && (
-            <CardActions className="flex justify-between" disableSpacing>
-              <div className="min-w-full">
-                <input
-                  // onKeyPress={(e) => {
-                  //   if (e.key === "Enter" && e.target.value) {
-                  //     handleCreateMessage(e.target.value);
-                  //     setSelectedImage("");
-                  //   }
-                  // }}
-                  type="text"
-                  className="bg-transparent border border-[#3b40544] rounded-full w-[93%] py-2 px-5"
-                  placeholder="Type a message"
-                />
-
-                <IconButton onClick={() => handleLikeStory(story.story)}>
-                  {isReactStoryByReqUser(auth.user.id, story.story) ? (
-                    <FavoriteIcon fontSize="large" />
-                  ) : (
-                    <FavoriteBorderIcon fontSize="large" />
+              <div className="absolute top-0 left-0 right-0 p-3 flex flex-col items-start">
+                <div className="flex justify-between items-center w-full mb-2">
+                  <CardHeader
+                    avatar={
+                      <a href={`/profile/${story?.user?.id}`}>
+                        <Avatar
+                          src={story.story?.user?.avatar}
+                          sx={{ objectFit: "cover" }}
+                          aria-label="recipe"
+                        />
+                      </a>
+                    }
+                    title={
+                      <div>
+                        <a
+                          href={`/profile/${story.story?.user?.id}`}
+                          className="font-bold"
+                        >
+                          {story.story?.user?.firstName +
+                            " " +
+                            story.story?.user?.lastName}
+                        </a>
+                        <p className="font-xs text-gray-100 font-bold">
+                          {calculateTimeAgo(story.story?.createdAt)}
+                        </p>
+                      </div>
+                    }
+                  />
+                  {auth?.user?.id === story.story?.user?.id && (
+                    <div>
+                      <Button
+                        id="basic-button"
+                        aria-haspopup="true"
+                        onClick={() => {
+                          handleDeleteStory(story.story.id);
+                        }}
+                      >
+                        <DeleteIcon className="text-white" />
+                      </Button>
+                    </div>
                   )}
-                </IconButton>
+                </div>
               </div>
-            </CardActions>
-          )}
-          <ListUserCard
-            open={open}
-            handleClose={handleClose}
-            title="Views"
-            data={story?.story?.watchedBy}
+              {story?.story?.user?.id == auth?.user?.id && (
+                <div className="flex gap-3 absolute bottom-0 left-0 right-0 font-bold">
+                  <div
+                    className="p-3 hover:cursor-pointer font-bold"
+                    onClick={handleOpen}
+                  >
+                    {story?.story?.watchedBy.length} views
+                  </div>
+                  <div
+                    className="p-3 hover:cursor-pointer font-bold"
+                    onClick={handleOpenReact}
+                  >
+                    {story?.story?.likes.length} react
+                  </div>
+                </div>
+              )}
+              {story?.story?.user?.id != auth?.user?.id && (
+                <CardActions
+                  className="flex justify-between absolute bottom-0 left-0 right-0"
+                  disableSpacing
+                >
+                  <div className="min-w-full">
+                    <input
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleCreateMessage();
+                        }
+                      }}
+                      type="text"
+                      className="bg-transparent border border-[#3b40544] rounded-full w-[93%] py-2 px-5"
+                      placeholder="Type a message"
+                      value={contentReply}
+                      onChange={(e) => setContentReply(e.target.value)}
+                    />
+
+                    <IconButton onClick={() => handleLikeStory(story.story)}>
+                      {isReactStoryByReqUser(auth.user.id, story.story) ? (
+                        <FavoriteIcon fontSize="large" />
+                      ) : (
+                        <FavoriteBorderIcon fontSize="large" />
+                      )}
+                    </IconButton>
+                  </div>
+                </CardActions>
+              )}
+              <ListUserCard
+                open={open}
+                handleClose={handleClose}
+                title="Views"
+                data={story?.story?.watchedBy}
+              />
+              <ListUserCard
+            open={openReact}
+            handleClose={handleCloseReact}
+            title="Reacts"
+            data={story?.story?.likes}
           />
+            </div>
+          )}
+          {/* ... (Rest of your content) */}
         </Card>
       </div>
       {checkNextStory() && (

@@ -78,7 +78,7 @@ export const storyReducer = (state = initialState, action) => {
         ...state,
         like: action.payload,
         loading: false,
-        stories: state.posts.map((item) =>
+        stories: state.stories.map((item) =>
           item.id === action.payload.id ? action.payload : item
         ),
         loading: false,
@@ -87,6 +87,7 @@ export const storyReducer = (state = initialState, action) => {
     case DELETE_STORY_SUCCESS:
       return {
         ...state,
+        stories: state.stories.filter((item) => item.id !== action.payload),
         loading: false,
         error: null,
       };

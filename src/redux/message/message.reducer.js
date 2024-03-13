@@ -1,11 +1,12 @@
-import {  CREATE_CHAT_SUCCESS, CREATE_MESSAGE_SUCCESS, GET_ALL_CHATS_SUCCESS } from "./message.actionType"
+import {  CREATE_CHAT_SUCCESS, CREATE_MESSAGE_SUCCESS, FIND_CHAT_SUCCESS, GET_ALL_CHATS_SUCCESS } from "./message.actionType"
 
 const initialState = {
     messages :[],
     chats: [],
     loading: false,
     error: null,
-    message: null
+    message: null,
+    chat: null
 }
 
 export const messageReducer = (state = initialState, action) => {
@@ -14,6 +15,8 @@ export const messageReducer = (state = initialState, action) => {
             return {...state, messages: action.payload}
         case CREATE_CHAT_SUCCESS:
             return {...state, chats: [action.payload, ...state.chats]}
+        case FIND_CHAT_SUCCESS:
+            return {...state, chat: action.payload}
         case GET_ALL_CHATS_SUCCESS:
             return {...state, chats: action.payload}
         default:

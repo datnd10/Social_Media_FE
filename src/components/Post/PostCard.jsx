@@ -6,7 +6,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import { red } from "@mui/material/colors";
@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createComment,
   deletePost,
+  getAllPost,
   getLikePost,
   getSavePost,
 } from "../../redux/post/post.action";
@@ -36,29 +37,70 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import UpdatePost from "../UpdatePost/UpdatePost";
 import { isSavedByReqUser } from "../../utils/isSavedByUser";
 import { useNavigate } from "react-router-dom";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import {
+  createNontification,
+  getUserNontification,
+} from "../../redux/nontifications/nontification.action";
+import { toast } from "react-toastify";
+
 const PostCard = ({ post, reload, setReload }) => {
   const [showComment, setShowComment] = useState(false);
   const dispatch = useDispatch();
 
   const { auth } = useSelector((state) => state);
 
-  const handleCreateComment = (content) => {
+  const handleCreateComment = async (content) => {
     const reqData = {
       postId: post.id,
       data: {
         content,
       },
     };
-    dispatch(createComment(reqData));
+    const data = {
+      content: `${
+        auth.user.firstName + " " + auth.user.lastName
+      } comment on your post`,
+    };
+    await dispatch(createComment(reqData));
+    if (auth.user.id !== post.user.id) {
+      await dispatch(
+        createNontification(
+          data,
+          post.id,
+          post.user.id,
+          sendNotificationToServer
+        )
+      );
+    }
+    await dispatch(getAllPost());
   };
 
-  const handleLikePost = (post) => {
-    dispatch(getLikePost(post.id));
+  const handleLikePost = async (post) => {
+    const data = {
+      content: `${
+        auth.user.firstName + " " + auth.user.lastName
+      } reaction your post`,
+    };
+    await dispatch(getLikePost(post.id));
+    if (auth.user.id !== post.user.id) {
+      await dispatch(
+        createNontification(
+          data,
+          post.id,
+          post.user.id,
+          sendNotificationToServer
+        )
+      );
+    }
+    await dispatch(getAllPost());
   };
 
-  const handleSavePost = (post) => {
-    dispatch(getSavePost(post.id));
-  }
+  const handleSavePost = async (post) => {
+    await dispatch(getSavePost(post.id));
+    await dispatch(getAllPost());
+  };
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -87,6 +129,8 @@ const PostCard = ({ post, reload, setReload }) => {
     return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
   };
 
+  const [toUserId, setToUserId] = useState();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openSetting = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -96,19 +140,58 @@ const PostCard = ({ post, reload, setReload }) => {
     setAnchorEl(null);
   };
 
-  const handleDeletePost = (postId) => {
-    setReload(!reload);
-    dispatch(deletePost(postId));
+  const handleDeletePost = async (postId) => {
+    await dispatch(deletePost(postId));
+    await dispatch(getAllPost());
   };
-  const [updatePost, setUpdatePost] = useState();
   const [openUpdatePost, setOpenUpdatePost] = useState();
   const handelCloseUpdatePost = () => setOpenUpdatePost(false);
   const handelOpenUpdatePost = () => {
-    setUpdatePost(post);
     setOpenUpdatePost(true);
   };
 
   const navigate = useNavigate();
+  const [hasConnected, setHasConnected] = useState(false);
+  const [stompClient, setStompClient] = useState(null);
+  useEffect(() => {
+    const sock = new SockJS("http://localhost:8080/ws");
+    const stomp = Stomp.over(sock);
+
+    stomp.connect({}, () => {
+      if (!hasConnected) {
+        setHasConnected(true);
+      }
+      console.log("Connected to WebSocket");
+      stomp.subscribe(`/user/${post?.user?.id}/notification`, (message) => {
+        console.log("Received message:", JSON.parse(message.body));
+        let receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+        if (auth.user.id === receivedMessage.toUser.id) {
+          toast.success(receivedMessage?.content);
+        }
+      });
+    });
+    setStompClient(stomp);
+
+    return () => {
+      stomp.disconnect();
+    };
+  }, [hasConnected]); // Empty dependency array to ensure it runs only once
+
+  const sendNotificationToServer = (userId, newMessage) => {
+    if (stompClient && newMessage) {
+      if (stompClient.connected) {
+        // Ensure the connection is established before sending
+        stompClient.send(
+          `/app/notify/${userId}`,
+          {},
+          JSON.stringify(newMessage)
+        );
+      } else {
+        console.log("WebSocket connection not established yet.");
+      }
+    }
+  };
 
   return (
     <Card className="">
@@ -197,7 +280,12 @@ const PostCard = ({ post, reload, setReload }) => {
             </Typography>
           </a>
 
-          <Typography variant="body2" color="text.secondary" className="hover:cursor-pointer" onClick={() => navigate(`/detail/post/${post?.id}`)}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            className="hover:cursor-pointer"
+            onClick={() => navigate(`/detail/post/${post?.id}`)}
+          >
             {post?.caption}
           </Typography>
         </div>
@@ -212,15 +300,18 @@ const PostCard = ({ post, reload, setReload }) => {
       </CardContent>
       <CardActions className="flex justify-between" disableSpacing>
         <div>
-          <IconButton onClick={() => handleLikePost(post)}>
+          <IconButton
+            onClick={() => {
+              setToUserId(post.user.id);
+              console.log("Updated To User ID:", toUserId);
+              handleLikePost(post);
+            }}
+          >
             {isLikedByReqUser(auth.user.id, post) ? (
               <FavoriteIcon />
             ) : (
               <FavoriteBorderIcon />
             )}
-          </IconButton>
-          <IconButton>
-            <ShareIcon />
           </IconButton>
           <IconButton onClick={() => setShowComment(!showComment)}>
             {showComment ? <ChatBubbleIcon /> : <ChatBubbleOutlineIcon />}
@@ -257,7 +348,7 @@ const PostCard = ({ post, reload, setReload }) => {
             />
           </div>
           <Divider />
-          <div className="mx-3 space-y-5 my-5 text-xs">
+          <div className="mx-3 space-y-5 my-5 text-xs max-h-64 overflow-y-auto">
             {post.comments.map((comment) => (
               <div className="flex items-center space-x-5">
                 <a
@@ -291,7 +382,7 @@ const PostCard = ({ post, reload, setReload }) => {
         open={openUpdatePost}
         handleClose={handelCloseUpdatePost}
         auth={auth}
-        updatePost={updatePost}
+        updatePost={post}
       />
     </Card>
   );

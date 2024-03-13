@@ -10,6 +10,7 @@ import {
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
+  LOG_OUT_SUCCESS,
   REGISTER_FAILURE,
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
@@ -86,6 +87,8 @@ export const authReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+    case LOG_OUT_SUCCESS:
+      return { ...state, jwt: null, error: null, loading: false, user: null };
     case LOGIN_FAILURE:
     case REGISTER_FAILURE:
     case GET_USER_BY_ID_FAILURE:

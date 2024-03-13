@@ -34,11 +34,11 @@ const MiddlePart = () => {
   
   useEffect(() => {
     dispatch(getAllPost());
-  }, [post.newComment, post.posts]);
+  }, []);
 
   useEffect(() => {
     dispatch(getAllStoryByFollowing());
-  }, [story.stories]);
+  }, []);
 
 
   const navigate = useNavigate();

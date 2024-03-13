@@ -21,6 +21,9 @@ import {
   LIKE_POST_SUCCESS,
   SAVE_POST_REQUEST,
   SAVE_POST_SUCCESS,
+  UPDATE_POST_FAILURE,
+  UPDATE_POST_REQUEST,
+  UPDATE_POST_SUCCESS,
 } from "./post.actionType";
 
 const initialState = {
@@ -30,9 +33,9 @@ const initialState = {
   error: null,
   posts: [],
   like: null,
-  comments:[],
+  comments: [],
   newComment: null,
-  savePost: []
+  savePost: [],
 };
 
 export const postReducer = (state = initialState, action) => {
@@ -45,6 +48,7 @@ export const postReducer = (state = initialState, action) => {
     case SAVE_POST_REQUEST:
     case GET_SAVE_POST_REQUEST:
     case GET_POST_BY_ID_REQUEST:
+    case UPDATE_POST_REQUEST:
       return {
         ...state,
         loading: true,
@@ -60,6 +64,7 @@ export const postReducer = (state = initialState, action) => {
       };
 
     case GET_POST_BY_ID_SUCCESS:
+    case UPDATE_POST_SUCCESS:
       return {
         ...state,
         detailPost: action.payload,
@@ -93,39 +98,36 @@ export const postReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
-    
+
     case SAVE_POST_SUCCESS:
       return {
         ...state,
-        savePost: action.payload,
         loading: false,
         error: null,
-        posts: state.posts.map((item) =>
-          item.id === action.payload.id ? action.payload : item
+        savePost: state.savePost.filter(
+          (item) => item.id !== action.payload.id
         ),
-        loading: false,
-        error: null,
-      }
-
+      };
     case CREATE_COMMENT_SUCCESS:
       return {
         ...state,
         loading: false,
         error: null,
-        newComment: action.payload
-      }
+        newComment: action.payload,
+      };
 
     case DELETE_POST_SUCCESS:
       return {
         ...state,
         loading: false,
         error: null,
-      }
+      };
     case CREATE_POST_FAILURE:
     case GET_ALL_POST_FAILURE:
     case LIKE_POST_FAILURE:
     case GET_USERS_POST_FAILURE:
-    case DELETE_POST_FAILURE: 
+    case DELETE_POST_FAILURE:
+    case UPDATE_POST_FAILURE:
       return {
         ...state,
         loading: false,

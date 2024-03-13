@@ -8,7 +8,7 @@ import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { useDispatch } from "react-redux";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useState } from "react";
-import { createStory } from "../../redux/story/story.action";
+import { createStory, getAllStoryByFollowing } from "../../redux/story/story.action";
 const style = {
   position: "absolute",
   top: "50%",
@@ -55,9 +55,10 @@ const CreateStory = ({ open, handleClose, auth }) => {
       image: "",
       video: "",
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
-      dispatch(createStory(values));
+      await dispatch(createStory(values));
+      await dispatch(getAllStoryByFollowing());
       formik.setFieldValue("image", "");
       formik.setFieldValue("video", "");
       setSelectedImage("");

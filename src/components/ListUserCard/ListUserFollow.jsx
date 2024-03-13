@@ -30,21 +30,18 @@ const ListUserFollow = ({ open, handleClose, title, data }) => {
   const [reload, setReload] = useState(false);
   useEffect(() => {
     dispatch(getAllUser());
-    console.log(auth);
-  }, [reload]);
+  }, []);
 
   const isUserFollowed = (userId) => {
     return auth.user.followings.includes(userId);
   };
 
-  const handleFollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(followUser(userId));
+  const handleFollowUser = async (userId) => {
+    await dispatch(followUser(userId));
   };
 
-  const handleUnfollowUser = (userId) => {
-    setReload(!reload);
-    dispatch(unFollowUser(userId));
+  const handleUnfollowUser = async (userId) => {
+    await dispatch(unFollowUser(userId));
   };
 
   return (

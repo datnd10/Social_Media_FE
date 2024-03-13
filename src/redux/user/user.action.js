@@ -8,7 +8,6 @@ export const getAllUser = () => async (dispatch) => {
     try {
         const {data} = await api.get(`/api/users`);
         dispatch({type: GET_ALL_USER_SUCCESS,  payload: data});
-        console.log("get all user", data);
     } catch (error) {
         console.log(error);
         dispatch({type: GET_ALL_USER_FAILURE, payload: error});

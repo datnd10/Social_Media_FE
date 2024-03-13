@@ -17,7 +17,7 @@ export const createReel = (reelData) => async (dispatch) => {
 export const deleteReel = (reelId) => async (dispatch) => {
     dispatch({type: DELETE_REEL_REQUEST});
     try {
-        const {data} = await api.delete(`/api/reels/${reelId}`);
+        const {data} = await api.put(`/api/reels/${reelId}`);
         dispatch({type: DELETE_REEL_SUCCESS,  payload: data});
         console.log(data);
     } catch (error) {

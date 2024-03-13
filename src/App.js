@@ -10,6 +10,9 @@ import { getProfile } from "./redux/auth/auth.action";
 import { getAllPost } from "./redux/post/post.action";
 import { ThemeProvider } from "@mui/material";
 import { DarkTheme } from "./Theme/DarkTheme";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   const {auth} = useSelector(store => store);
   const dispatch = useDispatch();
@@ -28,6 +31,7 @@ function App() {
         <Route path="/*" element={auth.user ? <HomePage /> : <Authentication />} />
         <Route path="/*" element={<Authentication />} />
       </Routes>
+      <ToastContainer />
     </ThemeProvider>
   );
 }

@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 const Sidebar = ({setShowNontification}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -13,9 +13,17 @@ const Sidebar = ({setShowNontification}) => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const dispatch = useDispatch();
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    dispatch({ type: "LOG_OUT_SUCCESS" });
+
+  }
 
   const navigate = useNavigate();
 
@@ -96,7 +104,7 @@ const Sidebar = ({setShowNontification}) => {
               >
                 Profile
               </MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </div>

@@ -44,7 +44,7 @@ const ArchiveStory = () => {
 
   useEffect(() => {
     getStoryToView();
-  }, [storyId, story.story]);
+  }, [storyId]);
   const calculateTimeAgo = (createdAt) => {
     const createdDate = new Date(createdAt);
     const currentDate = new Date();
@@ -72,8 +72,9 @@ const ArchiveStory = () => {
     dispatch(getLikeStory(post.id));
   };
 
-  const handleDeleteStory = (id) => {
-    dispatch(deleteStory(id));
+  const handleDeleteStory = async (id) => {
+    await dispatch(deleteStory(id));
+    await dispatch(getStoryToView());
   };
 
   const [open, setOpen] = React.useState(false);
@@ -121,32 +122,6 @@ const ArchiveStory = () => {
     }
   };
 
-  const [progress, setProgress] = React.useState(0);
-
-  React.useEffect(() => {
-    const duration = 5000; // 5 seconds
-    const interval = 50; // Update every 50 milliseconds
-    const steps = duration / interval;
-    let count = 0;
-
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        count += 1;
-        if (count >= steps) {
-          clearInterval(timer);
-          handleNextStory();
-          setProgress(0); // Làm mới giá trị của progress khi hoàn thành
-          return 0;
-        }
-        const diff = (100 / steps) * count;
-        return Math.min(diff, 100);
-      });
-    }, interval);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [handleNextStory]);
 
   return (
     <div className="flex items-center gap-10">
@@ -158,90 +133,88 @@ const ArchiveStory = () => {
         />
       )}
       <div className="flex-shrink-0">
-        <Card>
-          <CardHeader
-            avatar={
-              <a href={`/profile/${story?.user?.id}`}>
-                <Avatar
-                  src={story.story?.user?.avatar}
-                  sx={{ objectFit: "cover" }}
-                  aria-label="recipe"
-                />
-              </a>
-            }
-            action={
-              auth?.user?.id === story.story?.user?.id && (
-                <div>
-                  <Button
-                    id="basic-button"
-                    aria-haspopup="true"
-                    onClick={() => {
-                      handleDeleteStory(story.story.id);
-                    }}
-                  >
-                    <DeleteIcon className="text-white" />
-                  </Button>
-                </div>
-              )
-            }
-            title={
-              <div>
-                <a href={`/profile/${story.story?.user?.id}`}>
-                  {story.story?.user?.firstName +
-                    " " +
-                    story.story?.user?.lastName}
-                </a>
-                <p className="font-xs text-slate-500">
-                  {calculateTimeAgo(story.story?.createdAt)}
-                </p>
-              </div>
-            }
-          />
-
+      <Card>
           {story.story?.image && (
-            <div>
-              <Box sx={{ width: "100%" }}>
-                <LinearProgress variant="determinate" value={progress} />
-              </Box>
+            <div className="relative">
               <img
                 src={story.story?.image}
-                className="h-[90vh] w-[800px] object-cover"
+                className="h-[100vh] w-[800px] object-cover"
                 alt=""
               />
-            </div>
-          )}
-          {story.story?.video && (
-            <video
-              src={story.story?.video}
-              autoPlay
-              loop
-              muted
-              controls
-              className="h-[90vh] w-[800px] object-cover"
-            ></video>
-          )}
-          {story?.story?.user?.id == auth?.user?.id && (
-            <div className="flex gap-3">
-              <div className="p-3 hover:cursor-pointer font-medium" onClick={handleOpen}>
-                {story?.story?.watchedBy.length} views
+              <div className="absolute top-0 left-0 right-0 p-3 flex flex-col items-start">
+                <div className="flex justify-between items-center w-full mb-2">
+                  <CardHeader
+                    avatar={
+                      <a href={`/profile/${story?.user?.id}`}>
+                        <Avatar
+                          src={story.story?.user?.avatar}
+                          sx={{ objectFit: "cover" }}
+                          aria-label="recipe"
+                        />
+                      </a>
+                    }
+                    title={
+                      <div>
+                        <a
+                          href={`/profile/${story.story?.user?.id}`}
+                          className="font-bold"
+                        >
+                          {story.story?.user?.firstName +
+                            " " +
+                            story.story?.user?.lastName}
+                        </a>
+                        <p className="font-xs text-gray-100 font-bold">
+                          {calculateTimeAgo(story.story?.createdAt)}
+                        </p>
+                      </div>
+                    }
+                  />
+                  {auth?.user?.id === story.story?.user?.id && (
+                    <div>
+                      <Button
+                        id="basic-button"
+                        aria-haspopup="true"
+                        onClick={() => {
+                          handleDeleteStory(story.story.id);
+                        }}
+                      >
+                        <DeleteIcon className="text-white" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="p-3 hover:cursor-pointer font-medium" onClick={handleOpenReact}>
-                {story?.story?.likes.length} react
-              </div>
-            </div>
-          )}
-          <ListUserCard
-            open={open}
-            handleClose={handleClose}
-            title="Views"
-            data={story?.story?.watchedBy}
-          />
-          <ListUserCard
+              {story?.story?.user?.id == auth?.user?.id && (
+                <div className="flex gap-3 absolute bottom-0 left-0 right-0 font-bold">
+                  <div
+                    className="p-3 hover:cursor-pointer font-bold"
+                    onClick={handleOpen}
+                  >
+                    {story?.story?.watchedBy.length} views
+                  </div>
+                  <div
+                    className="p-3 hover:cursor-pointer font-bold"
+                    onClick={handleOpenReact}
+                  >
+                    {story?.story?.likes.length} react
+                  </div>
+                </div>
+              )}
+              <ListUserCard
+                open={open}
+                handleClose={handleClose}
+                title="Views"
+                data={story?.story?.watchedBy}
+              />
+              <ListUserCard
             open={openReact}
             handleClose={handleCloseReact}
             title="Reacts"
             data={story?.story?.likes}
           />
+            </div>
+          )}
+          {/* ... (Rest of your content) */}
         </Card>
       </div>
       {checkNextStory() && (

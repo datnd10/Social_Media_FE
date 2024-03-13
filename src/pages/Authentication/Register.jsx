@@ -9,8 +9,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { registerUser } from "../../redux/auth/auth.action";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile, registerUser } from "../../redux/auth/auth.action";
 const Register = () => {
   const initialValues = {firstName: "", lastName: "", email: "", password: "" };
   const validationSchema = {
@@ -23,9 +23,20 @@ const Register = () => {
 
   const dispatch = useDispatch();
 
-  const handelSubmit = (value) => {
-    value.gender = gender;
-    dispatch(registerUser({data: value}));
+  const jwt = localStorage.getItem("token");
+
+  const {auth} = useSelector(store => store);
+
+  const handelSubmit = async (value) => {
+    try {
+      value.gender = gender;
+      const result = await dispatch(registerUser({ data: value }));
+      if (result) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Registration failed!", error);
+    }
   };
 
   const [gender, setGender] = useState('female');
