@@ -48,7 +48,7 @@ const Sidebar = ({setShowNontification}) => {
         <div className="space-y-10 pl-5">
           <div className="items-center">
             <a href="/">
-              <span className="logo font-bold text-xl p-3">Dat Social</span>
+              <span className="logo font-bold text-xl p-3">Straw Social</span>
             </a>
           </div>
           <div className="space-y-10">

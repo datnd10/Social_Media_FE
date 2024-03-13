@@ -16,7 +16,7 @@ const Authentication = () => {
                 <div className='px-20 flex flex-col justify-center h-full'>
                   <Card className='card p-8'>
                     <div className='flex flex-col items-center mb-5 space-y-1'>
-                    <h1 className='log'>Dat Social</h1>
+                    <h1 className='log'>Straw Social</h1>
                     <p className='text-center text-sm w-[70&]'>Connecting Lives, Sharing Stories: Your social World, Your Way</p>
                     </div>
                     <Routes>
